@@ -1,0 +1,69 @@
+\documentclass[12 pt]{article} 
+\usepackage{float, amsfonts, amssymb, amsmath, blindtext, multicol, graphicx,
+enumitem, listings, hyperref}
+\usepackage[font=small,labelfont=bf]{caption}
+\graphicspath{ {./images/} }
+
+\oddsidemargin=-0.5cm
+\setlength{\textwidth}{6.5in}
+\addtolength{\voffset}{-20pt}
+\addtolength{\headsep}{25pt} 
+
+
+
+\pagestyle{myheadings}                           	
+\markright{Rowan Lochrin\hfill \today \hfill} 	
+
+
+\newcommand{\eqn}[0]{\begin{array}{rcl}}
+\newcommand{\eqnend}[0]{\end{array} } 
+
+\newcommand{\qed}[0]{$\square$}
+
+\begin{document}
+\noindent \textbf{CSC-696D, Takanori Fujiwara} \par
+\noindent \textbf{Final project proposal}.
+\noindent \textbf{Novel visualization techniques for git data}.
+\bigskip
+\subsection{Problem description}
+In this project we will create several novel visual analytic systems for git
+data. The tools we develop will help developers quickly gain an understanding of
+git repositories. We will focus on a few key questions.
+\begin{enumerate}
+    \item Who are the main contributors to a repository 
+    \item At what times was development most active for any repository
+    \item Can we identify times when AI assisted development because popular on
+        a given repository
+    \item What is the best visualization for giving developers a overview of the
+        project structure
+\end{enumerate}
+\subsection{Problem description and motivation}
+Developers often work with large amounts of code and are forced to quickly learn
+the custom's and conventions of many repositories, this process can be very
+time-consuming. By giving developers tools for quickly visualizing the history
+of a repository we can immediately give them an understanding of conventions, key
+contributors and etiquette. \par
+Many visualizations have been developed over the years to work with git data,
+in this project we want to develop a handful of new visualizations by first
+studying visualizations that other have developed and refining them to improve
+there visual clarity, augmenting them with additional data or even combining two
+visualization techniques into one. \par
+\subsection{Related research papers}
+\begin{itemize}
+\item \href{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9222261}{Githru\: Visual Analytics for Understanding Software Development History Through Git Metadata Analysis}
+\item \href{https://mircealungu.com/docs/assets/papers/22-Git-Truck.pdf}{Git-Truck: Hierarchy-Oriented Visualization of
+Git Repository Evolution}
+\item \href{https://arxiv.org/pdf/2508.12649}{ChangePrism:Visualizing the
+    Essence of Code Changes}
+\end{itemize}
+
+\subsection{Planned technical approach}
+\subsection{Selected dataset(s)}
+
+
+\subsection{Expected results and evaluation methodology}
+- evaluation examples include: case studies, user studies, quantitative evaluation
+
+
+
+\end{document}

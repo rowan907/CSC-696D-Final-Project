@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1774731570.01185 "propsal.tex" "propsal.pdf" "propsal" 1774731570.44437 0
+["pdflatex"] 1774734037.41853 "propsal.tex" "propsal.pdf" "propsal" 1774734037.87254 0
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1741388039 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/map/fontname/texfonts.map" 1741388039 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/map/pdftex/updmap/pdftex.map" 1741388039 5466553 2748998d7db8078826afa1f272036265 ""
@@ -71,9 +71,9 @@
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/tex/latex/url/url.sty" 1741388039 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/web2c/texmf.cnf" 1741388039 42151 79f67285bdd95beca4d137b380b4b9e5 ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-var/web2c/pdftex/pdflatex.fmt" 1741388039 3346140 981dae4097bc43850a521b8b1e36e95f ""
-  "propsal.aux" 1774731570.40705 968 bcefac1af7846379b1d8a76287e7c45c "pdflatex"
-  "propsal.out" 1774731570.40744 1153 e3fceb9a126e03f7162132b5defd2f9d "pdflatex"
-  "propsal.tex" 1774731568.60508 2839 b3ef2abe1d5aa844d71b002d1bdab239 ""
+  "propsal.aux" 1774734037.8362 968 9c63887dc68ddd614ebc71953b01d469 "pdflatex"
+  "propsal.out" 1774734037.83655 1153 e3fceb9a126e03f7162132b5defd2f9d "pdflatex"
+  "propsal.tex" 1774734035.65534 4909 458ddbf9632d84c038fa9fa5768009d5 ""
   (generated)
   "propsal.aux"
   "propsal.log"

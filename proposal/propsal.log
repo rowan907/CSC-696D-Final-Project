@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  28 MAR 2026 13:59
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  28 MAR 2026 14:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -547,10 +547,10 @@ Package caption Info: End \AtBeginDocument code.
 [1{/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/map/pdftex/up
 dmap/pdftex.map}
 
-{/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/enc/dvips/cm-su
-per/cm-super-ts1.enc}]
+]
 
-[2] (./propsal.aux)
+[2{/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/enc/dvips/cm-
+super/cm-super-ts1.enc}] (./propsal.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -559,23 +559,23 @@ Package rerunfilecheck Info: File `propsal.out' has not changed.
 (rerunfilecheck)             Checksum: E3FCEB9A126E03F7162132B5DEFD2F9D;1153.
  ) 
 Here is how much of TeX's memory you used:
- 13022 strings out of 473190
- 206869 string characters out of 5704335
- 610216 words of memory out of 5000000
+ 13023 strings out of 473190
+ 206875 string characters out of 5704335
+ 610296 words of memory out of 5000000
  36142 multiletter control sequences out of 15000+600000
  560736 words of font info for 42 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,5n,79p,322b,444s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,5n,79p,322b,549s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmbx12.pfb></opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmr12.pfb></opt/homebrew/Cellar/texlive/202503
 08_1/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl12.pfb></opt/homebrew/
 Cellar/texlive/20250308_1/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200
 .pfb>
-Output written on propsal.pdf (2 pages, 56959 bytes).
+Output written on propsal.pdf (2 pages, 60774 bytes).
 PDF statistics:
- 74 PDF objects out of 1000 (max. 8388607)
- 61 compressed objects within 1 object stream
- 13 named destinations out of 1000 (max. 500000)
+ 79 PDF objects out of 1000 (max. 8388607)
+ 66 compressed objects within 1 object stream
+ 14 named destinations out of 1000 (max. 500000)
  49 words of extra memory for PDF output out of 10000 (max. 10000000)
 

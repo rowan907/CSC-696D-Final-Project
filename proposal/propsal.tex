@@ -28,14 +28,16 @@ enumitem, listings, hyperref}
 \subsection{Problem description}
 In this project we will create several novel visual analytic systems for git
 data. The tools we develop will help developers quickly gain an understanding of
-git repositories. We will focus on a few key questions.
+git repositories. In particular, we seek to give users an understanding of how a
+repo changes over time. We will focus on a few key questions.
 \begin{enumerate}
     \item Who are the main contributors to a repository 
-    \item At what times was development most active for any repository
-    \item Can we identify times when AI assisted development because popular on
-        a given repository
-    \item What is the best visualization for giving developers a overview of the
-        project structure
+    \item At what were the development priorities for a repository at any given
+        time.
+    \item Can we identify a time when AI assisted development because popular on
+        a given repository.
+    \item What is the best visualization for giving developers an understanding of the
+        evolution project structure over time.
 \end{enumerate}
 \subsection{Problem description and motivation}
 Developers often work with large amounts of code and are forced to quickly learn
@@ -53,16 +55,37 @@ them over the course of the project.
 \begin{enumerate}
     \item A 'stabilized' Sediment Graph based on the work
         \href{https://github.com/erikbern/git-of-theseus}{Erik Bernhardsson}.
-        Erik proposes a unique way to underhand the age of the contents of a
+        Bernhardsson proposes a unique way to underhand the age of the contents of a
         repo, we seek to improve his designs by evenly spacing out various
         layers of the graph (instead of stacking them), to reduce visual
-        distortions oscillating streams of data.
-% jStream graph (https://www.feststelltaste.de/visualize-developer-contributions-with-stream-graphs/)
-%Revision Graph (https://github.com/gitextensions/gitextensions/wiki/Revision-Graph)
+        distortions from oscillating streams of data.
+    \item A commit graph and word cloud style view that allow users to select
+        many commits via a time window selection and see a word cloud of
+        the commit messages. This will allow users to quickly see the
+        development focuses of a repo at a particular time window. This is
+        inspired by a view from the paper \textit{Visual Analytics for Understanding Software Development History Through
+        Git Metadata Analysis}. We seek to enhance there view by adding a time
+        window selection allowing these clouds to be generated for any section
+        of the commit history. Another enhancement we could make is creating an
+        animation going through the commit history with a sliding window to see how the word
+        cloud changes over time.
+    \item A grouping based visualization that clusters files or directories that
+        are often modified together, this will help users understand which parts
+        of the codebase are most tightly coupled. We seek to animate this view
+        to give users an understanding of how that changes overtime.
 \end{enumerate}
 \subsection{Related research papers}
 \begin{itemize}
-\item \href{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9222261}{Githru\: Visual Analytics for Understanding Software Development History Through Git Metadata Analysis}
+\item
+    \href{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9222261}{Githru\:
+        Visual Analytics for Understanding Software Development History Through
+        Git Metadata Analysis} ---
+    This work shows an all-in-one visual analytic tool for examining git history
+        and provides a lot of great background on git. Many techniques here may
+        be useful in particular the paper provides a lot of detail on the
+        technical aspects of creating visualization's with git meta-data. We
+        also took inspiration from this paper for our second proposed
+        visualization as discussed above.
 \item \href{https://mircealungu.com/docs/assets/papers/22-Git-Truck.pdf}{Git-Truck: Hierarchy-Oriented Visualization of
 Git Repository Evolution} --- Git-Truck is a hierarchical file-organized-oriented 
     visualization tool that represents git repositories as different treemaps. 
@@ -73,12 +96,21 @@ Git Repository Evolution} --- Git-Truck is a hierarchical file-organized-oriente
     focus we have on in this project. Mainly, we emphasize the importance of seeing 
     the historical development of features in a repository.
 \item \href{https://arxiv.org/pdf/2508.12649}{ChangePrism:Visualizing the
-    Essence of Code Changes}
+    Essence of Code Changes} This paper gives another approach to visualizing
+        code changes that relies on semantic Analysis. Though this papers focus
+        is more on visualizing individual commits and discreet changes rather
+        than the type of broad analysis of larger repositories we hope to do,
+        but gives some good background on existing visual analytic techniques.
 \end{itemize}
 \subsection{Planned technical approach}
 Our visualizations will use the `.git` files for the repos we are studying as a
 standardized source of data. We plan to implement our visualizations in
-Javascript, we may pull in dependencies for creating charts as needed.
+JavaScript, we may pull in dependencies for creating charts as needed.
+Currently, we do not have our exact technical stack but our project will run on
+Node, and use NPM for dependency management
+React is an option but we're also investigating if a simpler UI framework would
+meet our needs. AI use is planned to speed up implementation, models used will
+probably be Claude Haiku/Sonnet/Opus 4.x.
 
 \subsection{Selected dataset(s)}
 We will focus on three categories of repos in this project.
@@ -97,7 +129,9 @@ a short text description of the visualizations—explaining works inspiring the
 visualization, the types of analytical questions the visualization seeks to
 answer and the strengths and weakness of our approach. The app will also feature
 a selector that will allow you to view any git repository with any of the 
-aforementioned visualization techniques.
+aforementioned visualization techniques. We will the gather feedback from
+professional software engineers on the usefulness of our visualization and
+applicability of our tools to there current development workflow.
 
 % evaluation examples include: case studies, user studies, quantitative evaluation
 

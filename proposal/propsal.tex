@@ -41,15 +41,15 @@ git repositories. We will focus on a few key questions.
 Developers often work with large amounts of code and are forced to quickly learn
 the custom's and conventions of many repositories, this process can be very
 time-consuming. By giving developers tools for quickly visualizing the history
-of a repository we can immediately give them an understanding of conventions, key
-contributors and etiquette. \par
+of a repository, we can immediately give them an understanding of conventions, key
+contributors, and etiquette. \par
 Many visualizations have been developed over the years to work with git data,
 in this project we want to develop a handful of new visualizations by first
 studying visualizations that other have developed and refining them to improve
 there visual clarity, augmenting them with additional data or even combining two
 visualization techniques into one. \par
 Currently we have planned 3 visualizations but may add more or modify some of
-them over the course of the project
+them over the course of the project.
 \begin{enumerate}
     \item A 'stabilized' Sediment Graph based on the work
         \href{https://github.com/erikbern/git-of-theseus}{Erik Bernhardsson}.
@@ -64,12 +64,19 @@ them over the course of the project
 \begin{itemize}
 \item \href{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9222261}{Githru\: Visual Analytics for Understanding Software Development History Through Git Metadata Analysis}
 \item \href{https://mircealungu.com/docs/assets/papers/22-Git-Truck.pdf}{Git-Truck: Hierarchy-Oriented Visualization of
-Git Repository Evolution}
+Git Repository Evolution} --- Git-Truck is a hierarchical file-organized-oriented 
+    visualization tool that represents git repositories as different treemaps. 
+    Each treemap has its nodes sized by the number of lines of code in the repository, 
+    and the color of its nodes can represent a variety of interested factors 
+    such as number of commits, top contributors, or even the last change day. 
+    This is showing the current structure of a repository, rather than the temporal 
+    focus we have on in this project. Mainly, we emphasize the importance of seeing 
+    the historical development of features in a repository.
 \item \href{https://arxiv.org/pdf/2508.12649}{ChangePrism:Visualizing the
     Essence of Code Changes}
 \end{itemize}
 \subsection{Planned technical approach}
-Our visualization's will use the `.git` files for the repos we are studying as a
+Our visualizations will use the `.git` files for the repos we are studying as a
 standardized source of data. We plan to implement our visualizations in
 Javascript, we may pull in dependencies for creating charts as needed.
 
@@ -81,16 +88,16 @@ We will focus on three categories of repos in this project.
     \item Large repositories with few contributes like the \href{https://github.com/emacs-mirror/emacs}{emacs}
     \item Small repositories with few contributes like \href{https://gitlab.com/distant-horizons-team/distant-horizons}{mods} and web
         applications created by small teams or individuals. For fun, we will even feed
-        the git repo for this project into our system.
+        the git repository for this project into our system.
 \end{itemize}
 \subsection{Expected results and evaluation methodology}
-In this project we seek to create a web application to demonstrate and explain
+In this project, we seek to create a web application to demonstrate and explain
 our visual analytic systems. It will feature the visualizations we've created, 
-a short text description of the visualizations - explaining works inspiring the
+a short text description of the visualizations—explaining works inspiring the
 visualization, the types of analytical questions the visualization seeks to
 answer and the strengths and weakness of our approach. The app will also feature
-a selector that will allow you to view any git repo with any visualization
-technique.
+a selector that will allow you to view any git repository with any of the 
+aforementioned visualization techniques.
 
 % evaluation examples include: case studies, user studies, quantitative evaluation
 

@@ -15088,5 +15088,1475 @@
     "date": "2019-05-13 11:54:51 +0100",
     "subject": "Drop 'adapters'",
     "branch": "master"
+  },
+  {
+    "hash": "84b9691f3ff3184a9627eee4d088982bbb295f23",
+    "parents": [
+      "fe7d30990a6e0a4daac57d71969385fe97bc4f13"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-09 10:57:23 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "fe7d30990a6e0a4daac57d71969385fe97bc4f13",
+    "parents": [
+      "fc7a79a1ba167acf7951bd415df40dbe8a13b660"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-09 10:49:27 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "fc7a79a1ba167acf7951bd415df40dbe8a13b660",
+    "parents": [
+      "3408d7baadd24715475e1a4f68475a3838ca5425",
+      "a260d0ace87727c2a64f008a20c33c73fefdfc8b"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 16:37:41 +0100",
+    "subject": "Merge pull request #45 from taoufik07/patch-1",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "a260d0ace87727c2a64f008a20c33c73fefdfc8b",
+    "parents": [
+      "3408d7baadd24715475e1a4f68475a3838ca5425"
+    ],
+    "author": "Taoufik",
+    "date": "2019-05-08 17:31:06 +0200",
+    "subject": "Remove print",
+    "branch": "master"
+  },
+  {
+    "hash": "3408d7baadd24715475e1a4f68475a3838ca5425",
+    "parents": [
+      "39a5c53a67ec55dc66c203368cdad052409d2ea7"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 15:08:50 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "39a5c53a67ec55dc66c203368cdad052409d2ea7",
+    "parents": [
+      "d7f2478fcfc26b523cc9abca15d6d116537a4d0c",
+      "e91c69d2adb0dadf9d5c66b7d4e666fdf0d29abf"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 15:01:20 +0100",
+    "subject": "Merge pull request #44 from encode/request-data",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "e91c69d2adb0dadf9d5c66b7d4e666fdf0d29abf",
+    "parents": [
+      "19542f2c3cdb0104c23887b07c9c7a2c53964a93"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 14:59:41 +0100",
+    "subject": "Support url-encoded data in requests",
+    "branch": "master"
+  },
+  {
+    "hash": "19542f2c3cdb0104c23887b07c9c7a2c53964a93",
+    "parents": [
+      "3553625815a83f0fda7039eb73ba73ff7aab9595"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 14:45:06 +0100",
+    "subject": "Request(content=...) -> Request(data=...)",
+    "branch": "master"
+  },
+  {
+    "hash": "d7f2478fcfc26b523cc9abca15d6d116537a4d0c",
+    "parents": [
+      "3553625815a83f0fda7039eb73ba73ff7aab9595"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 14:01:01 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "3553625815a83f0fda7039eb73ba73ff7aab9595",
+    "parents": [
+      "e99ffbd7acbffb0d4eddd912ad3a30571f62a499",
+      "2485c74a9d03a7a9d486cb40e606782ea6a96f5f"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 13:59:32 +0100",
+    "subject": "Merge pull request #43 from encode/badges",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "2485c74a9d03a7a9d486cb40e606782ea6a96f5f",
+    "parents": [
+      "e99ffbd7acbffb0d4eddd912ad3a30571f62a499"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 13:53:53 +0100",
+    "subject": "Add badges",
+    "branch": "master"
+  },
+  {
+    "hash": "e99ffbd7acbffb0d4eddd912ad3a30571f62a499",
+    "parents": [
+      "666d5a84f3ecd4dabc2261e141c7a5e794f26fc3"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 13:52:26 +0100",
+    "subject": "Increase test coverage",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "666d5a84f3ecd4dabc2261e141c7a5e794f26fc3",
+    "parents": [
+      "61654591d137bbf57f339a9f79b9df4cf77c9905"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 13:52:12 +0100",
+    "subject": "Improve class __repr__",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "61654591d137bbf57f339a9f79b9df4cf77c9905",
+    "parents": [
+      "3de0425ef2c5bdea1c601d81314b87044eb5ecb4"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 13:02:32 +0100",
+    "subject": "Add query_params to URL and Request constructors",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "3de0425ef2c5bdea1c601d81314b87044eb5ecb4",
+    "parents": [
+      "698cb5a524f5116fd3c237156e04a283c38bde3a",
+      "faededae59b95bd46bdbb063f2b3d3ae5b45ee55"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 12:47:43 +0100",
+    "subject": "Merge pull request #42 from encode/query-params",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "faededae59b95bd46bdbb063f2b3d3ae5b45ee55",
+    "parents": [
+      "211bef130b972e007a9d79e84ac38ee3c566f0b3"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 12:43:06 +0100",
+    "subject": "Add query_params support",
+    "branch": "master"
+  },
+  {
+    "hash": "211bef130b972e007a9d79e84ac38ee3c566f0b3",
+    "parents": [
+      "698cb5a524f5116fd3c237156e04a283c38bde3a"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 12:01:48 +0100",
+    "subject": "Add QueryParams class",
+    "branch": "master"
+  },
+  {
+    "hash": "698cb5a524f5116fd3c237156e04a283c38bde3a",
+    "parents": [
+      "93d7ba340e282c13f931ae266f1c6c9a43436128",
+      "6d162a0d3a77e986e231c140cfb7971df0b53599"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 10:49:41 +0100",
+    "subject": "Merge pull request #40 from encode/graceful-behavior-for-unclosed-https-connections",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "6d162a0d3a77e986e231c140cfb7971df0b53599",
+    "parents": [
+      "8a227c1f2bd9b409602f5ed4e8ccd4c20245ad6a"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 10:47:22 +0100",
+    "subject": "Graceful behavior for unclosed HTTPS connections",
+    "branch": "master"
+  },
+  {
+    "hash": "93d7ba340e282c13f931ae266f1c6c9a43436128",
+    "parents": [
+      "5c1cb305bc73529404a1c0af66ebae85cddf0d89"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 10:08:37 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "5c1cb305bc73529404a1c0af66ebae85cddf0d89",
+    "parents": [
+      "8a227c1f2bd9b409602f5ed4e8ccd4c20245ad6a",
+      "c628eb061ced1c213c9dca8046930ac2657c5589"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-08 10:07:26 +0100",
+    "subject": "Merge pull request #39 from matusf/29-add-raise_for_status",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "c628eb061ced1c213c9dca8046930ac2657c5589",
+    "parents": [
+      "0629e55f98dd315bcc31ec894b523f424afe3125"
+    ],
+    "author": "Matus Ferech",
+    "date": "2019-05-04 17:44:35 +0200",
+    "subject": "Test `raise_for_status`",
+    "branch": "master"
+  },
+  {
+    "hash": "0629e55f98dd315bcc31ec894b523f424afe3125",
+    "parents": [
+      "21970153864d541af243d7adba3eb4510cbdfd5f"
+    ],
+    "author": "Matus Ferech",
+    "date": "2019-05-04 17:44:06 +0200",
+    "subject": "Add `status_code` endpoint",
+    "branch": "master"
+  },
+  {
+    "hash": "21970153864d541af243d7adba3eb4510cbdfd5f",
+    "parents": [
+      "fb6d14f9e8c3ed2d7f3628906c3a1ac100a58b24"
+    ],
+    "author": "Matus Ferech",
+    "date": "2019-05-04 17:42:55 +0200",
+    "subject": "Add `HttpError`",
+    "branch": "master"
+  },
+  {
+    "hash": "fb6d14f9e8c3ed2d7f3628906c3a1ac100a58b24",
+    "parents": [
+      "8a227c1f2bd9b409602f5ed4e8ccd4c20245ad6a"
+    ],
+    "author": "Matus Ferech",
+    "date": "2019-05-04 17:42:27 +0200",
+    "subject": "Add `raise_for_status` to `Response`",
+    "branch": "master"
+  },
+  {
+    "hash": "8a227c1f2bd9b409602f5ed4e8ccd4c20245ad6a",
+    "parents": [
+      "0c6f6182cf0656a574c124200acd3fda58ba0d9c"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-02 12:11:05 +0100",
+    "subject": "Fix docstrings",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "0c6f6182cf0656a574c124200acd3fda58ba0d9c",
+    "parents": [
+      "2de053eff3df8e68520ef22141cb99afc2cd4bcb"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 16:21:04 +0100",
+    "subject": "Reorganise structure",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "2de053eff3df8e68520ef22141cb99afc2cd4bcb",
+    "parents": [
+      "5f8000fb352a23dc9f75217d92a86f583163151b"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 16:01:36 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "5f8000fb352a23dc9f75217d92a86f583163151b",
+    "parents": [
+      "891548ea7ea52d41f5a2dcace05c46ca366825af"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 15:58:23 +0100",
+    "subject": "Updating docstrings",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "891548ea7ea52d41f5a2dcace05c46ca366825af",
+    "parents": [
+      "4fe2f694a17972efe71fcd9460f57b2b8f3dcfd7"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 15:39:53 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "4fe2f694a17972efe71fcd9460f57b2b8f3dcfd7",
+    "parents": [
+      "6cb5c0de0e93bc0fa9c5cb3e220c48112f05083b"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 15:33:41 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "6cb5c0de0e93bc0fa9c5cb3e220c48112f05083b",
+    "parents": [
+      "fa8d2963c4cf014dcaba0373c6679434bf5ae74e"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 15:17:58 +0100",
+    "subject": "Still truckin' on",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "fa8d2963c4cf014dcaba0373c6679434bf5ae74e",
+    "parents": [
+      "6b60d95a4d504a54210d0a1a4fc65e16ba7a1dff"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 14:49:44 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "6b60d95a4d504a54210d0a1a4fc65e16ba7a1dff",
+    "parents": [
+      "0ca1c844cd23cc89fb55cef7a8dc8683ffe07d91"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 14:35:23 +0100",
+    "subject": "Truckin' on",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "0ca1c844cd23cc89fb55cef7a8dc8683ffe07d91",
+    "parents": [
+      "d7cf8bbf36dbfe72e06242cd3382646ec955a852"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 12:39:16 +0100",
+    "subject": "Truckin' on",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "d7cf8bbf36dbfe72e06242cd3382646ec955a852",
+    "parents": [
+      "118d94b58c80be8771b480c7d58184d34118b642"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 12:32:31 +0100",
+    "subject": "Media types with 'text/' should default to iso-8859-1",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "118d94b58c80be8771b480c7d58184d34118b642",
+    "parents": [
+      "e1ecb360d9839d31d2c5645ee4021af7dbb97800",
+      "5d552eba69e9655feefc79cf1aa5d73636d84a99"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 11:36:47 +0100",
+    "subject": "Merge pull request #21 from yeraydiazdiaz/wait-for-connection-close",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "5d552eba69e9655feefc79cf1aa5d73636d84a99",
+    "parents": [
+      "20bc1f353005a71fa74d238ad00e1ab8bcaf86be"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 09:49:08 +0100",
+    "subject": "Update test_sync.py",
+    "branch": "master"
+  },
+  {
+    "hash": "20bc1f353005a71fa74d238ad00e1ab8bcaf86be",
+    "parents": [
+      "99dc1a99d2d93f21f850a23c569b72a878029ccb",
+      "302fe93df9fa44218b5089379fb9f3236169dec0"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 09:46:19 +0100",
+    "subject": "Merge branch 'master' into wait-for-connection-close",
+    "branch": "master",
+    "merge": "hstspreload-doc"
+  },
+  {
+    "hash": "99dc1a99d2d93f21f850a23c569b72a878029ccb",
+    "parents": [
+      "91a2a1b8968bceae16e3cdcbae396dd212cdf7da"
+    ],
+    "author": "Yeray Diaz Diaz",
+    "date": "2019-04-27 17:16:41 +0100",
+    "subject": "Add `raw` method to SyncResponse",
+    "branch": "master"
+  },
+  {
+    "hash": "e1ecb360d9839d31d2c5645ee4021af7dbb97800",
+    "parents": [
+      "b9487984147362b9869a500bcba3f16df732105f"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 11:32:03 +0100",
+    "subject": "Carefulness with encoding everywhere",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "b9487984147362b9869a500bcba3f16df732105f",
+    "parents": [
+      "302fe93df9fa44218b5089379fb9f3236169dec0"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-05-01 10:58:58 +0100",
+    "subject": "Add idna support. More tests.",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "302fe93df9fa44218b5089379fb9f3236169dec0",
+    "parents": [
+      "fd9823e59c7f7ca322aa035b8f59717935e3f103"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 17:39:40 +0100",
+    "subject": "Use rfc3986 for URL handling",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "fd9823e59c7f7ca322aa035b8f59717935e3f103",
+    "parents": [
+      "d8df61b44b9de52c9639cf2da828fc5ed364b004"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 16:37:10 +0100",
+    "subject": "Add test for explicitly setting the encoding to use",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "d8df61b44b9de52c9639cf2da828fc5ed364b004",
+    "parents": [
+      "4255d41846035c7502ae3b5150a01ee297f6a0e8"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 16:35:25 +0100",
+    "subject": "Add response.text and response.encoding",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "4255d41846035c7502ae3b5150a01ee297f6a0e8",
+    "parents": [
+      "4c5511313c792cc3eee4a300b40e9ff6f98ba57f"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 15:08:24 +0100",
+    "subject": "Prefer 'content' over 'body'",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "4c5511313c792cc3eee4a300b40e9ff6f98ba57f",
+    "parents": [
+      "dea4d42c6d9bb092fac705b712039de7c27d57f7"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 14:58:43 +0100",
+    "subject": "Response.content",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "dea4d42c6d9bb092fac705b712039de7c27d57f7",
+    "parents": [
+      "4d908d024f72cc4df5d163b55d801792f5a16529"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 13:52:37 +0100",
+    "subject": "Rejig test and tighten up models API",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "4d908d024f72cc4df5d163b55d801792f5a16529",
+    "parents": [
+      "d7619a92a8fac98fa2136f262c003dd3d89df179"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 11:40:37 +0100",
+    "subject": "Clean up response interface",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "d7619a92a8fac98fa2136f262c003dd3d89df179",
+    "parents": [
+      "d652479b074a97b1829b9fa7663bf400d5e3af04"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-30 11:26:11 +0100",
+    "subject": "Finessing interface",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "d652479b074a97b1829b9fa7663bf400d5e3af04",
+    "parents": [
+      "2b134a6a3d58164440ccc3cdef5835672ad1c51a"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 17:14:08 +0100",
+    "subject": "response.next()",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "2b134a6a3d58164440ccc3cdef5835672ad1c51a",
+    "parents": [
+      "696c054968b16487a4fc5a3c92491c24a3d131d6",
+      "51ae3e1e966b106376098da517946a63b590e97f"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 17:00:40 +0100",
+    "subject": "Merge pull request #20 from yeraydiazdiaz/decoding-exceptions",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "51ae3e1e966b106376098da517946a63b590e97f",
+    "parents": [
+      "6b4742303e215ce72e062cf408982e06f50b2c86",
+      "696c054968b16487a4fc5a3c92491c24a3d131d6"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 16:58:00 +0100",
+    "subject": "Merge branch 'master' into decoding-exceptions",
+    "branch": "master",
+    "merge": "hstspreload-doc"
+  },
+  {
+    "hash": "696c054968b16487a4fc5a3c92491c24a3d131d6",
+    "parents": [
+      "91a2a1b8968bceae16e3cdcbae396dd212cdf7da",
+      "450ea25b5ad8194d180d16ede4537166ab7b3b18"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 16:55:42 +0100",
+    "subject": "Merge pull request #23 from encode/adapters",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "450ea25b5ad8194d180d16ede4537166ab7b3b18",
+    "parents": [
+      "b392b7ea591734813e94c9f0237365a53e17f91e"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 16:18:41 +0100",
+    "subject": "Add await response.next() interface",
+    "branch": "master"
+  },
+  {
+    "hash": "b392b7ea591734813e94c9f0237365a53e17f91e",
+    "parents": [
+      "05e0649e8fee91913b59c61515a387f0a389a8ac"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 16:08:31 +0100",
+    "subject": "Test allow_redirects=False",
+    "branch": "master"
+  },
+  {
+    "hash": "05e0649e8fee91913b59c61515a387f0a389a8ac",
+    "parents": [
+      "83d322f7368155abe5129272b74d7a989fe79a85"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 16:05:05 +0100",
+    "subject": "Nicer headers interface",
+    "branch": "master"
+  },
+  {
+    "hash": "83d322f7368155abe5129272b74d7a989fe79a85",
+    "parents": [
+      "4f23ab4f0d3fa074d44d055fabaa194412e28661"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 15:25:44 +0100",
+    "subject": "Handle body in redirects",
+    "branch": "master"
+  },
+  {
+    "hash": "4f23ab4f0d3fa074d44d055fabaa194412e28661",
+    "parents": [
+      "041813bc4a7bd45550dd8d558cb2a0893ca93cd2"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 14:25:24 +0100",
+    "subject": "Rejig request preparing",
+    "branch": "master"
+  },
+  {
+    "hash": "041813bc4a7bd45550dd8d558cb2a0893ca93cd2",
+    "parents": [
+      "8b4ef87a892c0b8aff61ede0445ec3ca999fe26e"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 12:35:58 +0100",
+    "subject": "Redirections",
+    "branch": "master"
+  },
+  {
+    "hash": "8b4ef87a892c0b8aff61ede0445ec3ca999fe26e",
+    "parents": [
+      "e09fc3741f8b5f311a463634afcef0f3cfd97243"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 12:12:08 +0100",
+    "subject": "Redirect tests",
+    "branch": "master"
+  },
+  {
+    "hash": "e09fc3741f8b5f311a463634afcef0f3cfd97243",
+    "parents": [
+      "fe43c08adccfe309135aaf6fdbce82db9587d5c2"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-29 11:54:48 +0100",
+    "subject": "Restructuring",
+    "branch": "master"
+  },
+  {
+    "hash": "fe43c08adccfe309135aaf6fdbce82db9587d5c2",
+    "parents": [
+      "8a29a0a1ad6b9eafce34f810c61b43bb00440448"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-26 17:08:38 +0100",
+    "subject": "Add API sketch",
+    "branch": "master"
+  },
+  {
+    "hash": "8a29a0a1ad6b9eafce34f810c61b43bb00440448",
+    "parents": [
+      "fab6fcd397e43e97286ba284816762cf6e7e55c9"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-26 17:00:47 +0100",
+    "subject": "Rollin'",
+    "branch": "master"
+  },
+  {
+    "hash": "fab6fcd397e43e97286ba284816762cf6e7e55c9",
+    "parents": [
+      "ddf1cec65a0dc6c18d7a163ff2fc73b2eb134cce"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-26 15:34:04 +0100",
+    "subject": "Adapters",
+    "branch": "master"
+  },
+  {
+    "hash": "ddf1cec65a0dc6c18d7a163ff2fc73b2eb134cce",
+    "parents": [
+      "6d35506277f66f6e88e85a75a2dadd758d98cce2"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 17:16:37 +0100",
+    "subject": "Drop connections from pool on connection exceptions",
+    "branch": "master"
+  },
+  {
+    "hash": "6d35506277f66f6e88e85a75a2dadd758d98cce2",
+    "parents": [
+      "06f6d50084343e894fb7535e0dcf1da3e8caa725"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 17:05:40 +0100",
+    "subject": "Drop unneccessary __hash__ methods",
+    "branch": "master"
+  },
+  {
+    "hash": "06f6d50084343e894fb7535e0dcf1da3e8caa725",
+    "parents": [
+      "f942eb94f113f29b1415e47a1c0640d9cdf0ce26"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 17:03:14 +0100",
+    "subject": "More specfic annotations on callbacks",
+    "branch": "master"
+  },
+  {
+    "hash": "f942eb94f113f29b1415e47a1c0640d9cdf0ce26",
+    "parents": [
+      "28c505a70f080bca9fd9e5549a65c7dbdc9ce195"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 16:17:42 +0100",
+    "subject": "Add http2 connection re-use",
+    "branch": "master"
+  },
+  {
+    "hash": "28c505a70f080bca9fd9e5549a65c7dbdc9ce195",
+    "parents": [
+      "286f04f1a641473d124c5e8403de24b323861054"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 15:31:47 +0100",
+    "subject": "Tighten up connection acquiry/release",
+    "branch": "master"
+  },
+  {
+    "hash": "286f04f1a641473d124c5e8403de24b323861054",
+    "parents": [
+      "9ab607d8a3316ee2456b74219ed882d486304714"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 12:57:18 +0100",
+    "subject": "Add PoolSemaphore",
+    "branch": "master"
+  },
+  {
+    "hash": "9ab607d8a3316ee2456b74219ed882d486304714",
+    "parents": [
+      "a44190ff24558c2ee5efc9dd422f836af376150b"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 12:23:20 +0100",
+    "subject": "More HTTP/2 tests",
+    "branch": "master"
+  },
+  {
+    "hash": "a44190ff24558c2ee5efc9dd422f836af376150b",
+    "parents": [
+      "abe46b8a0e2b19c3b2e46e170f21ac5aed20392e"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-25 12:05:23 +0100",
+    "subject": "Stream refactoring and HTTP/2 test case",
+    "branch": "master"
+  },
+  {
+    "hash": "abe46b8a0e2b19c3b2e46e170f21ac5aed20392e",
+    "parents": [
+      "13b28b6ebb4077d361ce8499fd99609fb4745e7d"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-24 19:38:53 +0100",
+    "subject": "Add h2 to install_requires",
+    "branch": "master"
+  },
+  {
+    "hash": "13b28b6ebb4077d361ce8499fd99609fb4745e7d",
+    "parents": [
+      "0bdcbaef72c569aaaac548b99f2ecfee5a0a76dd"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-24 17:12:05 +0100",
+    "subject": "Tighten up how we hand out stream ids",
+    "branch": "master"
+  },
+  {
+    "hash": "0bdcbaef72c569aaaac548b99f2ecfee5a0a76dd",
+    "parents": [
+      "53f3dc4a6628dabe2732fe7dfec334dacb235da9"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-24 17:04:15 +0100",
+    "subject": "Add stream ID to HTTP2Connection",
+    "branch": "master"
+  },
+  {
+    "hash": "53f3dc4a6628dabe2732fe7dfec334dacb235da9",
+    "parents": [
+      "91a2a1b8968bceae16e3cdcbae396dd212cdf7da"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-24 15:48:18 +0100",
+    "subject": "First pass at HTTP/2 support",
+    "branch": "master"
+  },
+  {
+    "hash": "6b4742303e215ce72e062cf408982e06f50b2c86",
+    "parents": [
+      "bdc218f8e686a2936c4069b00acde66391eaaf4c"
+    ],
+    "author": "Yeray Diaz Diaz",
+    "date": "2019-04-29 13:38:36 +0100",
+    "subject": "Raise single DecodingError",
+    "branch": "master"
+  },
+  {
+    "hash": "bdc218f8e686a2936c4069b00acde66391eaaf4c",
+    "parents": [
+      "91a2a1b8968bceae16e3cdcbae396dd212cdf7da"
+    ],
+    "author": "Yeray Diaz Diaz",
+    "date": "2019-04-26 20:09:57 +0100",
+    "subject": "Wrap decoding errors with custom exceptions",
+    "branch": "master"
+  },
+  {
+    "hash": "91a2a1b8968bceae16e3cdcbae396dd212cdf7da",
+    "parents": [
+      "0c20fba8a9a4e61898893f2f7967020933a0631f",
+      "4ed3a8a4035b419ddd05e41e3f854dcd69b14837"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-24 11:52:51 +0100",
+    "subject": "Merge pull request #17 from encode/close-keepalive-connections",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "4ed3a8a4035b419ddd05e41e3f854dcd69b14837",
+    "parents": [
+      "799df23dde030ed3f638fc593d6be9a665e37918"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-24 11:47:31 +0100",
+    "subject": "Drop wait_closed",
+    "branch": "master"
+  },
+  {
+    "hash": "799df23dde030ed3f638fc593d6be9a665e37918",
+    "parents": [
+      "b7d315af3bda72ea85d86f7f291c32025d6375a2"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-24 11:42:45 +0100",
+    "subject": "Close outstanding connections on pool.close()",
+    "branch": "master"
+  },
+  {
+    "hash": "0c20fba8a9a4e61898893f2f7967020933a0631f",
+    "parents": [
+      "0f178cadeef1589abcc9f8357e5efcbac9b6efe1",
+      "b7d315af3bda72ea85d86f7f291c32025d6375a2"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 14:26:53 +0100",
+    "subject": "Merge pull request #15 from encode/module-renaming",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "b7d315af3bda72ea85d86f7f291c32025d6375a2",
+    "parents": [
+      "903a961897c791e09612c9353dc8b08c23e4ff31"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 14:25:47 +0100",
+    "subject": "Module renaming",
+    "branch": "master"
+  },
+  {
+    "hash": "0f178cadeef1589abcc9f8357e5efcbac9b6efe1",
+    "parents": [
+      "bb3d45281656939ee3ebb660262a4396348a3131"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 11:57:24 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "bb3d45281656939ee3ebb660262a4396348a3131",
+    "parents": [
+      "903a961897c791e09612c9353dc8b08c23e4ff31"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 11:57:12 +0100",
+    "subject": "Update README for 0.2.0",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "903a961897c791e09612c9353dc8b08c23e4ff31",
+    "parents": [
+      "39eb55b2b31eccc741892bdfa5f631a3e33cc4a7",
+      "e58d255414bbf6814e281de5790066194e78c59f"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 11:54:20 +0100",
+    "subject": "Merge pull request #13 from encode/sync",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "e58d255414bbf6814e281de5790066194e78c59f",
+    "parents": [
+      "03080623f0fe2850ae4e6cc7600583bf08d06b8a"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 11:53:22 +0100",
+    "subject": "Version 0.2.0",
+    "branch": "master"
+  },
+  {
+    "hash": "03080623f0fe2850ae4e6cc7600583bf08d06b8a",
+    "parents": [
+      "c9b9ea07b6ba98eb32bbe01b2ad5c4335f6f3fe1"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 11:52:41 +0100",
+    "subject": "Add SyncResponse.close",
+    "branch": "master"
+  },
+  {
+    "hash": "c9b9ea07b6ba98eb32bbe01b2ad5c4335f6f3fe1",
+    "parents": [
+      "4a36ec74c7c31d1b0dbd579dc569d968b882e875"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 11:31:51 +0100",
+    "subject": "Add SyncResponse.stream",
+    "branch": "master"
+  },
+  {
+    "hash": "4a36ec74c7c31d1b0dbd579dc569d968b882e875",
+    "parents": [
+      "39eb55b2b31eccc741892bdfa5f631a3e33cc4a7"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 11:12:37 +0100",
+    "subject": "Add SyncConnectionPool",
+    "branch": "master"
+  },
+  {
+    "hash": "39eb55b2b31eccc741892bdfa5f631a3e33cc4a7",
+    "parents": [
+      "30a03f4faa5686dd62a94f52d3ec98ba2652c8d6",
+      "5b2f3ed656bf81e4d5f550b74c06393a62e8f536"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 09:48:57 +0100",
+    "subject": "Merge pull request #12 from encode/refactor",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "5b2f3ed656bf81e4d5f550b74c06393a62e8f536",
+    "parents": [
+      "275443c4a11290a00497340dc8b572289ee05c75"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 09:37:10 +0100",
+    "subject": "Use different hosts in pool acquiry timeout test.",
+    "branch": "master"
+  },
+  {
+    "hash": "275443c4a11290a00497340dc8b572289ee05c75",
+    "parents": [
+      "9a362c0b017e764a5d0411b270ed22debad8d4fd"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-23 09:34:41 +0100",
+    "subject": "Add client.request",
+    "branch": "master"
+  },
+  {
+    "hash": "9a362c0b017e764a5d0411b270ed22debad8d4fd",
+    "parents": [
+      "be774980cea4cadb205a53a6bda3a2d40bfd9086"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-22 22:12:46 +0100",
+    "subject": "Add client.request",
+    "branch": "master"
+  },
+  {
+    "hash": "be774980cea4cadb205a53a6bda3a2d40bfd9086",
+    "parents": [
+      "25c652a4389241844a80540932fcd5fd173e8b16"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-22 17:33:43 +0100",
+    "subject": "Refactor to request = Client.send(request)",
+    "branch": "master"
+  },
+  {
+    "hash": "25c652a4389241844a80540932fcd5fd173e8b16",
+    "parents": [
+      "30a03f4faa5686dd62a94f52d3ec98ba2652c8d6"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-22 15:45:56 +0100",
+    "subject": "Push SSL context loading into config.py",
+    "branch": "master"
+  },
+  {
+    "hash": "30a03f4faa5686dd62a94f52d3ec98ba2652c8d6",
+    "parents": [
+      "66594e30dc733dd47724a540f7efb8e0208991ee"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-22 15:30:55 +0100",
+    "subject": "Drop compat.py",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "66594e30dc733dd47724a540f7efb8e0208991ee",
+    "parents": [
+      "23252f6cd9e629ae7c513bc24a8c6a1061d61429"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-19 20:37:20 +0100",
+    "subject": "Version 0.1.1",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "23252f6cd9e629ae7c513bc24a8c6a1061d61429",
+    "parents": [
+      "fc7cf9def62cf66e061f717c44f24c2ec4d3fd90"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-18 11:53:53 +0100",
+    "subject": "Version 0.1.0",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "fc7cf9def62cf66e061f717c44f24c2ec4d3fd90",
+    "parents": [
+      "df84cdea5163d8822a543713cc8c5c2949aff008"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-18 11:41:13 +0100",
+    "subject": "Add response.reason",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "df84cdea5163d8822a543713cc8c5c2949aff008",
+    "parents": [
+      "74c9048ba247d1ce5da809ee5a01e2429aa95791",
+      "42c0e06c8cc303931bff5e31e15a36e90100a8fc"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-18 10:56:38 +0100",
+    "subject": "Merge pull request #9 from encode/allow_per_request_timeout_and_ssl",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "42c0e06c8cc303931bff5e31e15a36e90100a8fc",
+    "parents": [
+      "74c9048ba247d1ce5da809ee5a01e2429aa95791"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-18 10:36:30 +0100",
+    "subject": "Allow per-request timeout/ssl config",
+    "branch": "master"
+  },
+  {
+    "hash": "74c9048ba247d1ce5da809ee5a01e2429aa95791",
+    "parents": [
+      "8e1a26366e8720eb2de5edb3b0818494e2ee4385"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-18 09:38:29 +0100",
+    "subject": "Add ConnectTimeout test",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "8e1a26366e8720eb2de5edb3b0818494e2ee4385",
+    "parents": [
+      "9927dc8bf0db958a4608f375718d3a6f2af5fb4a"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-17 17:46:57 +0100",
+    "subject": "README tweaks",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "9927dc8bf0db958a4608f375718d3a6f2af5fb4a",
+    "parents": [
+      "34c03d780fcd28888c065bb4343c76f901e4d233"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-17 17:38:59 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "34c03d780fcd28888c065bb4343c76f901e4d233",
+    "parents": [
+      "68c468a67e00972292db7d2f33a6777cbb01c644",
+      "148818c212a0c486e39dba0d56993564ffb08857"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-17 17:38:34 +0100",
+    "subject": "Merge pull request #7 from encode/timeout-tests",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "148818c212a0c486e39dba0d56993564ffb08857",
+    "parents": [
+      "68c468a67e00972292db7d2f33a6777cbb01c644"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-17 17:38:03 +0100",
+    "subject": "Add PoolTimeout, and timeout tests",
+    "branch": "master"
+  },
+  {
+    "hash": "68c468a67e00972292db7d2f33a6777cbb01c644",
+    "parents": [
+      "6acdfb8131df426a577944bc786dc8c0570d34cb",
+      "29cb53f09e0927d9b8b44b98812eccbd361d1e64"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-17 17:03:29 +0100",
+    "subject": "Merge pull request #4 from encode/connection-pooling",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "29cb53f09e0927d9b8b44b98812eccbd361d1e64",
+    "parents": [
+      "5f3a8bdb4d95490f0119a2d35c3a59cfb4711e81"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-17 16:54:18 +0100",
+    "subject": "Add soft_limit and hard_limit support to PoolLimits",
+    "branch": "master"
+  },
+  {
+    "hash": "5f3a8bdb4d95490f0119a2d35c3a59cfb4711e81",
+    "parents": [
+      "63d73ad554cb27beef5fa4baa23c712083e24e55"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 15:58:38 +0100",
+    "subject": "Connection pooling",
+    "branch": "master"
+  },
+  {
+    "hash": "63d73ad554cb27beef5fa4baa23c712083e24e55",
+    "parents": [
+      "ee6f42a8f49aedaed3dfc567676c798908e4b3b0"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 14:04:17 +0100",
+    "subject": "Rejig response streaming/closing",
+    "branch": "master"
+  },
+  {
+    "hash": "6acdfb8131df426a577944bc786dc8c0570d34cb",
+    "parents": [
+      "fae53e2735610231dd7fafac43c67c067b7c7874"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 12:21:52 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "fae53e2735610231dd7fafac43c67c067b7c7874",
+    "parents": [
+      "60befed47072f254071034eeecee7f2ab173e970",
+      "ee6f42a8f49aedaed3dfc567676c798908e4b3b0"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 12:19:24 +0100",
+    "subject": "Merge pull request #3 from encode/request-auto-headers",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "ee6f42a8f49aedaed3dfc567676c798908e4b3b0",
+    "parents": [
+      "042dd2205846c9ac0e4796ec754aef9127a752c7"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 12:18:38 +0100",
+    "subject": "Exclude unused code lines",
+    "branch": "master"
+  },
+  {
+    "hash": "042dd2205846c9ac0e4796ec754aef9127a752c7",
+    "parents": [
+      "60befed47072f254071034eeecee7f2ab173e970"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 12:14:20 +0100",
+    "subject": "Add auto headers on Request",
+    "branch": "master"
+  },
+  {
+    "hash": "60befed47072f254071034eeecee7f2ab173e970",
+    "parents": [
+      "f0eb1c0581eef17159c0b9e12d35178ccbe55ff7",
+      "39b57c939dd6d02ccd5fc7bd176bbe33ef53abed"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 11:36:05 +0100",
+    "subject": "Merge pull request #2 from encode/decompression",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "39b57c939dd6d02ccd5fc7bd176bbe33ef53abed",
+    "parents": [
+      "9d59a5a1d67440c38399616bea6019e914848c88"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-16 11:26:28 +0100",
+    "subject": "Add support for gzip, deflate, and brotli decoding",
+    "branch": "master"
+  },
+  {
+    "hash": "f0eb1c0581eef17159c0b9e12d35178ccbe55ff7",
+    "parents": [
+      "2ad85016076b06c438bbd45a453a4021592d21e6"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-08 12:06:35 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "2ad85016076b06c438bbd45a453a4021592d21e6",
+    "parents": [
+      "0d3eb0e438f918ed121a467af510b9669859e0c2"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-08 12:06:05 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "0d3eb0e438f918ed121a467af510b9669859e0c2",
+    "parents": [
+      "337eb70eb0b6a2be7a4720dcf341c6a86378d985"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-08 10:14:21 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "337eb70eb0b6a2be7a4720dcf341c6a86378d985",
+    "parents": [
+      "01a3c090646f219f22c930c5f9ddf372454ebc06"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-08 10:13:48 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "01a3c090646f219f22c930c5f9ddf372454ebc06",
+    "parents": [
+      "9d59a5a1d67440c38399616bea6019e914848c88"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-08 10:12:22 +0100",
+    "subject": "Update README.md",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "9d59a5a1d67440c38399616bea6019e914848c88",
+    "parents": [
+      "1124cc4bc055a0e62dd30def53b5574334cd3652"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-06 15:39:09 +0100",
+    "subject": "Improve GatewayService example",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "1124cc4bc055a0e62dd30def53b5574334cd3652",
+    "parents": [
+      "d572f4c56c30fa2039d65ef49957903f0f34ca87"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-06 14:42:12 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "d572f4c56c30fa2039d65ef49957903f0f34ca87",
+    "parents": [
+      "75b8fa4d0d62ce459f5c8aaff539f5c7528152e5"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-06 13:44:35 +0100",
+    "subject": "Tweak GatewayServer example",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "75b8fa4d0d62ce459f5c8aaff539f5c7528152e5",
+    "parents": [
+      "7626fe7c87e8481bd35368e8f2c1bbe715cf578c"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-06 13:38:38 +0100",
+    "subject": "Version 0.0.3",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "7626fe7c87e8481bd35368e8f2c1bbe715cf578c",
+    "parents": [
+      "665743aedbb61178c90626050da3b70e4ca20341",
+      "ba1953cdd01f48a9847ad8481dd8786415a8c58a"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-06 13:21:03 +0100",
+    "subject": "Merge pull request #1 from encode/add-connections",
+    "branch": "hstspreload-doc",
+    "merge": "master"
+  },
+  {
+    "hash": "ba1953cdd01f48a9847ad8481dd8786415a8c58a",
+    "parents": [
+      "86263fa073aa97cc4f11026e9ca81bef12599f1b"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-06 13:20:47 +0100",
+    "subject": "Linting",
+    "branch": "master"
+  },
+  {
+    "hash": "86263fa073aa97cc4f11026e9ca81bef12599f1b",
+    "parents": [
+      "6a4376b202b339b384c728b6753f8f852b42cac8"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-06 13:18:39 +0100",
+    "subject": "Connections",
+    "branch": "master"
+  },
+  {
+    "hash": "6a4376b202b339b384c728b6753f8f852b42cac8",
+    "parents": [
+      "fcc1fe1233c5a47d65ba6d39619a16873efafc70"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-05 17:49:59 +0100",
+    "subject": "Connections",
+    "branch": "master"
+  },
+  {
+    "hash": "fcc1fe1233c5a47d65ba6d39619a16873efafc70",
+    "parents": [
+      "665743aedbb61178c90626050da3b70e4ca20341"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-05 17:16:12 +0100",
+    "subject": "Decoder support",
+    "branch": "master"
+  },
+  {
+    "hash": "665743aedbb61178c90626050da3b70e4ca20341",
+    "parents": [
+      "3d6aba6eb66fdb07a68682649b8e772503315be5"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 20:08:24 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "3d6aba6eb66fdb07a68682649b8e772503315be5",
+    "parents": [
+      "87b21b0c4f0eeec8addc3287bc376e6cccb30bed"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 20:04:24 +0100",
+    "subject": "Only serve http requests, ignore websocket and lifespan events",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "87b21b0c4f0eeec8addc3287bc376e6cccb30bed",
+    "parents": [
+      "7bd9f32cf5fa3fa176b789cffe7e7114a3348b76"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 19:58:30 +0100",
+    "subject": "Added proxy example",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "7bd9f32cf5fa3fa176b789cffe7e7114a3348b76",
+    "parents": [
+      "68b80dcfb043715350d277d6411e966a03a7de59"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 18:46:12 +0100",
+    "subject": "Version 0.0.2",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "68b80dcfb043715350d277d6411e966a03a7de59",
+    "parents": [
+      "04ec665eaac2c668c3a01a70f864dbc1749ec49c"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 18:34:17 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "04ec665eaac2c668c3a01a70f864dbc1749ec49c",
+    "parents": [
+      "a940798d7eea1edcb56679f00f896ee7f34304cd"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 18:31:08 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "a940798d7eea1edcb56679f00f896ee7f34304cd",
+    "parents": [
+      "30530d446d1ae2f0c3df9b25a67b919c2c00ba1a"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 18:30:41 +0100",
+    "subject": "Update README",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "30530d446d1ae2f0c3df9b25a67b919c2c00ba1a",
+    "parents": [
+      "d12e5d49d09f87b318d7dd85a19b561b89123bbb"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 18:28:38 +0100",
+    "subject": "Stuff",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "d12e5d49d09f87b318d7dd85a19b561b89123bbb",
+    "parents": [
+      "d8497d308e30d0805b8d1cafa77da603579480a1"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 13:30:46 +0100",
+    "subject": "Add scripts/clean",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "d8497d308e30d0805b8d1cafa77da603579480a1",
+    "parents": [
+      "a75bc0ebcdd503cae11aeb5224a3f23587929c2b"
+    ],
+    "author": "Tom Christie",
+    "date": "2019-04-04 13:29:52 +0100",
+    "subject": "Add scripts/publish",
+    "branch": "hstspreload-doc"
+  },
+  {
+    "hash": "a75bc0ebcdd503cae11aeb5224a3f23587929c2b",
+    "parents": [],
+    "author": "Tom Christie",
+    "date": "2019-04-04 13:27:55 +0100",
+    "subject": "Initial commit",
+    "branch": "hstspreload-doc"
   }
 ]

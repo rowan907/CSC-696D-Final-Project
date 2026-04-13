@@ -18,7 +18,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
-const maxCount = parseInt(process.argv[2] ?? "1500", 10);
+const maxCount = parseInt(process.argv[2] ?? "4500", 10);
 const gitDataDir = resolve(root, "git_data");
 const outDir = resolve(root, "public");
 

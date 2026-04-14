@@ -209,11 +209,16 @@ interface Props {
   commits: Commit[];
   mainBranch: string;
   onSelectionChange?: (commits: Commit[]) => void;
+  skipBranchFilter?: boolean;
 }
 
-export default function CommitGraph({ commits, mainBranch, onSelectionChange }: Props) {
+export default function CommitGraph({ commits, mainBranch, onSelectionChange, skipBranchFilter }: Props) {
   // Filter to only commits reachable from main (includes merged feature branches)
-  const filtered = useMemo(() => filterToMainBranch(commits, mainBranch), [commits, mainBranch]);
+  // Skip when commits are already pre-filtered (e.g. by timeline), since parent links may be broken
+  const filtered = useMemo(
+    () => skipBranchFilter ? commits : filterToMainBranch(commits, mainBranch),
+    [commits, mainBranch, skipBranchFilter],
+  );
   const { placed, maxLanes } = useMemo(
     () => buildLayout(filtered, mainBranch),
     [filtered, mainBranch],
@@ -266,10 +271,17 @@ export default function CommitGraph({ commits, mainBranch, onSelectionChange }: 
     if (dragStart.current === null) return;
     const range = { startRow: dragStart.current, endRow: rowFromY(e.clientY) };
     dragStart.current = null;
-    // Only treat as a drag-selection if the mouse actually moved
     if (dragMoved.current) {
       setSelection(range);
       fireSelection(range);
+    } else {
+      // Single click on empty space clears the selection (circles handle their own clicks)
+      const tag = (e.target as Element).tagName.toLowerCase();
+      if (tag !== "circle") {
+        setSelection(null);
+        setActiveBranch(null);
+        onSelectionChange?.(placed);
+      }
     }
     dragMoved.current = false;
   };

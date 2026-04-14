@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import styled, { createGlobalStyle } from "styled-components";
 import { find } from "lodash";
 import CommitGraph from "./components/CommitGraph";
 import WordCloud from "./components/WordCloud";
+import FileClusterMap from "./components/FileClusterMap";
+import CommitTimeline from "./components/CommitTimeline";
 import TestViz from "./components/TestViz";
 import type { Commit } from "./types/git";
 
@@ -53,6 +55,12 @@ const VIZS = [
     label: "Word Cloud",
     description:
       "Drag to select a range of commits in the graph — the word cloud updates to show the most frequent words in those commit messages. Click a commit dot to filter by branch.",
+  },
+  {
+    key: "clustermap",
+    label: "File Cluster Map",
+    description:
+      "Force-directed graph of the top 60 files. Files modified together in the same commit are pulled toward each other — the more often they co-change, the stronger the attraction. Node size = total commits touched. Color = directory. Drag nodes, scroll to zoom.",
   },
   {
     key: "test",
@@ -198,6 +206,29 @@ const Body = styled.div`
   min-height: 0;
 `;
 
+const TimelineStrip = styled.div`
+  height: 72px;
+  flex-shrink: 0;
+  border-top: 1px solid #21262d;
+  background: #0d1117;
+  display: flex;
+  flex-direction: column;
+`;
+
+const TimelineLabel = styled.div`
+  padding: 3px 16px;
+  font-size: 10px;
+  color: #6e7681;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+`;
+
+const TimelineContent = styled.div`
+  flex: 1;
+  min-height: 0;
+`;
+
 const Pane = styled.div`
   display: flex;
   flex-direction: column;
@@ -240,6 +271,8 @@ export default function App() {
   const [activeRepo, setActiveRepo] = useState(REPOS[0].key);
   const [activeViz, setActiveViz] = useState(VIZS[0].key);
   const [selectedCommits, setSelectedCommits] = useState<Commit[]>([]);
+  const [timeFilteredCommits, setTimeFilteredCommits] = useState<Commit[] | null>(null);
+  const [timeRange, setTimeRange] = useState<[Date, Date] | null>(null);
 
   const { data, isLoading, isError, error } = useQuery<Commit[]>({
     queryKey: ["commits", activeRepo],
@@ -248,12 +281,32 @@ export default function App() {
 
   const repoConfig = find(REPOS, { key: activeRepo })!;
   const vizConfig = find(VIZS, { key: activeViz })!;
+
+  const graphCommits = activeViz === "clustermap" ? (timeFilteredCommits ?? data ?? []) : (data ?? []);
   const cloudCommits = selectedCommits.length > 0 ? selectedCommits : (data ?? []);
+  const clusterCommits = timeFilteredCommits ?? cloudCommits;
 
   const handleRepoChange = (key: string) => {
     setActiveRepo(key);
     setSelectedCommits([]);
+    setTimeFilteredCommits(null);
+    setTimeRange(null);
   };
+
+  const handleVizChange = (key: string) => {
+    setActiveViz(key);
+    if (key !== "clustermap") {
+      setTimeFilteredCommits(null);
+      setTimeRange(null);
+      setSelectedCommits([]);
+    }
+  };
+
+  const handleTimelineChange = useCallback((filtered: Commit[], range: [Date, Date] | null) => {
+    setTimeFilteredCommits(range ? filtered : null);
+    setTimeRange(range);
+    setSelectedCommits([]);
+  }, []);
 
   return (
     <>
@@ -272,7 +325,7 @@ export default function App() {
                 <SegBtn
                   key={v.key}
                   $active={activeViz === v.key}
-                  onClick={() => setActiveViz(v.key)}
+                  onClick={() => handleVizChange(v.key)}
                 >
                   {v.label}
                 </SegBtn>
@@ -308,9 +361,10 @@ export default function App() {
               {isError && <Status $error>Error: {(error as Error).message}</Status>}
               {data && (
                 <CommitGraph
-                  commits={data}
+                  commits={graphCommits}
                   mainBranch={repoConfig.mainBranch}
                   onSelectionChange={setSelectedCommits}
+                  skipBranchFilter={!!timeRange}
                 />
               )}
             </PaneContent>
@@ -319,19 +373,43 @@ export default function App() {
           <Pane>
             <PaneLabel>
               {vizConfig.label}
-              {activeViz === "wordcloud" &&
-                (selectedCommits.length > 0
+              {activeViz === "clustermap"
+                ? timeRange
+                  ? ` · ${clusterCommits.length} commits in range`
+                  : selectedCommits.length > 0
+                    ? ` · ${selectedCommits.length} selected commits`
+                    : data
+                      ? ` · all ${data.length} commits`
+                      : ""
+                : selectedCommits.length > 0
                   ? ` · ${selectedCommits.length} selected commits`
                   : data
                     ? ` · all ${data.length} commits`
-                    : "")}
+                    : ""}
             </PaneLabel>
             <PaneContent>
               {activeViz === "wordcloud" && <WordCloud commits={cloudCommits} />}
+              {activeViz === "clustermap" && <FileClusterMap commits={clusterCommits} allCommits={data ?? []} repoKey={activeRepo} />}
               {activeViz === "test" && <TestViz />}
             </PaneContent>
           </Pane>
         </Body>
+
+        {activeViz === "clustermap" && (
+          <TimelineStrip>
+            <TimelineLabel>
+              Timeline
+              {timeRange
+                ? ` · ${timeRange[0].toLocaleDateString(undefined, { year: "numeric", month: "short" })} – ${timeRange[1].toLocaleDateString(undefined, { year: "numeric", month: "short" })}`
+                : " · drag to filter by date range"}
+            </TimelineLabel>
+            <TimelineContent>
+              {data && (
+                <CommitTimeline commits={data} onRangeChange={handleTimelineChange} />
+              )}
+            </TimelineContent>
+          </TimelineStrip>
+        )}
       </AppWrapper>
     </>
   );

@@ -1,3 +1,8 @@
+export interface CommitFile {
+  status: string; // M, A, D, R, C, etc.
+  path: string;
+}
+
 export interface Commit {
   hash: string;
   parents: string[];
@@ -6,4 +11,5 @@ export interface Commit {
   subject: string;
   branch: string | null;
   merge?: string | null;
+  files?: CommitFile[];
 }

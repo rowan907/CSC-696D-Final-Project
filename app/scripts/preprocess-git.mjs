@@ -31,7 +31,7 @@ if (repos.length === 0) {
   process.exit(1);
 }
 
-const fmt = "%H\x1f%P\x1f%an\x1f%ai\x1f%s";
+const fmt = "---COMMIT_START---\n%H\x1f%P\x1f%an\x1f%ai\x1f%s";
 
 for (const repoName of repos) {
   const gitDir = join(gitDataDir, repoName);
@@ -63,7 +63,7 @@ for (const repoName of repos) {
   let raw;
   try {
     raw = execSync(
-      `git --git-dir="${gitDir}" log --all --topo-order --pretty=format:"${fmt}" --max-count=${maxCount}`,
+      `git --git-dir="${gitDir}" log --all --topo-order --pretty=format:"${fmt}" --name-status --max-count=${maxCount}`,
       { encoding: "utf8", maxBuffer: 100 * 1024 * 1024 },
     );
   } catch (err) {
@@ -72,17 +72,30 @@ for (const repoName of repos) {
   }
 
   const rows = raw
-    .trim()
-    .split("\n")
+    .split("---COMMIT_START---\n")
     .filter(Boolean)
-    .map((line) => {
-      const [hash, parentsRaw, author, date, ...subjectParts] = line.split("\x1f");
+    .map((block) => {
+      const lines = block.split("\n");
+      const [hash, parentsRaw, author, date, ...subjectParts] = lines[0].split("\x1f");
+
+      const files = [];
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        const parts = line.split("\t");
+        if (parts.length < 2) continue;
+        const status = parts[0][0]; // First char: M, A, D, R, C, etc.
+        const path = parts[parts.length - 1]; // Last part handles renames (old\tnew)
+        files.push({ status, path });
+      }
+
       return {
         hash,
         parents: parentsRaw ? parentsRaw.split(" ").filter(Boolean) : [],
         author,
         date,
         subject: subjectParts.join("\x1f"),
+        files,
       };
     });
 
@@ -194,6 +207,7 @@ for (const repoName of repos) {
       date: c.date,
       subject: c.subject,
       branch,
+      files: c.files,
     };
 
     if (isMerge) {

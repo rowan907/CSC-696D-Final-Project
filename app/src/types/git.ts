@@ -1,5 +1,6 @@
 export interface CommitFile {
-  status: string; // M, A, D, R, C, etc.
+  additions: number;
+  deletions: number;
   path: string;
 }
 

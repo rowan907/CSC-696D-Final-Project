@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { select } from "d3-selection";
 import {
   stack,

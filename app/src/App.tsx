@@ -262,7 +262,7 @@ const Status = styled.p<{ $error?: boolean }>`
 `;
 
 async function fetchCommits(repoKey: string): Promise<Commit[]> {
-  const res = await fetch(`/${repoKey}_commits.json`);
+  const res = await fetch(`${import.meta.env.BASE_URL}${repoKey}_commits.json`);
   if (!res.ok) throw new Error(`Failed to fetch commits for ${repoKey}`);
   return res.json();
 }

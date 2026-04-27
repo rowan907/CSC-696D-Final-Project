@@ -9,6 +9,8 @@ on:
 # Required for GitHub Pages deployment
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -27,7 +29,11 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./app
-        run: npm ci
+        run: npm install
+
+      - name: Preprocess Git Data
+        working-directory: ./app
+        run: npm run preprocess:git
 
       - name: Build
         working-directory: ./app
@@ -39,9 +45,6 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git remote set-url origin https://${github_token}@github.com/${repository}
+          git remote set-url origin https://x-access-token:${{ secrets.GH_DEPLOY_KEY }}@github.com/${{ github.repository }}
           npm run deploy
-        env:
-          github_token: ${{ secrets.GH_DEPLOY_KEY }}
-          repository: ${{ github.repository }}
 

@@ -87,10 +87,6 @@ const TextRow = styled.div<{ $selected: boolean }>`
   border-bottom: 1px solid #161b22;
   white-space: nowrap;
   cursor: crosshair;
-  background: ${({ $selected }) => ($selected ? "#1c2333" : "transparent")};
-  &:hover {
-    background: ${({ $selected }) => ($selected ? "#243046" : "#161b22")};
-  }
 `;
 const Hash = styled.span`
   color: #79c0ff;

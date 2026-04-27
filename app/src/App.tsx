@@ -6,6 +6,7 @@ import CommitGraph from "./components/CommitGraph";
 import WordCloud from "./components/WordCloud";
 import FileClusterMap from "./components/FileClusterMap";
 import CommitTimeline from "./components/CommitTimeline";
+import StreamGraph from "./components/StreamGraph";
 import TestViz from "./components/TestViz";
 import type { Commit } from "./types/git";
 
@@ -61,6 +62,12 @@ const VIZS = [
     label: "File Cluster Map",
     description:
       "Force-directed graph of the top 60 files. Files modified together in the same commit are pulled toward each other — the more often they co-change, the stronger the attraction. Node size = total commits touched. Color = directory. Drag nodes, scroll to zoom.",
+  },
+  {
+    key: "streamgraph",
+    label: "Sediment Graph",
+    description:
+      "Stream graph showing how much code from each era survives over time. Each band is a cohort (1/64th of the repo's history). Band width = net lines of code. Each file is charged to the cohort that introduced it — edits and deletions reduce that cohort. Cool colors = old code, warm colors = new code.",
   },
   {
     key: "test",
@@ -390,6 +397,7 @@ export default function App() {
             <PaneContent>
               {activeViz === "wordcloud" && <WordCloud commits={cloudCommits} />}
               {activeViz === "clustermap" && <FileClusterMap commits={clusterCommits} allCommits={data ?? []} repoKey={activeRepo} />}
+              {activeViz === "streamgraph" && <StreamGraph commits={data ?? []} />}
               {activeViz === "test" && <TestViz />}
             </PaneContent>
           </Pane>

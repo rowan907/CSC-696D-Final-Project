@@ -63,7 +63,7 @@ for (const repoName of repos) {
   let raw;
   try {
     raw = execSync(
-      `git --git-dir="${gitDir}" log --all --topo-order --pretty=format:"${fmt}" --name-status --max-count=${maxCount}`,
+      `git --git-dir="${gitDir}" log --all --topo-order --pretty=format:"${fmt}" --numstat --max-count=${maxCount}`,
       { encoding: "utf8", maxBuffer: 100 * 1024 * 1024 },
     );
   } catch (err) {
@@ -83,10 +83,12 @@ for (const repoName of repos) {
         const line = lines[i];
         if (!line.trim()) continue;
         const parts = line.split("\t");
-        if (parts.length < 2) continue;
-        const status = parts[0][0]; // First char: M, A, D, R, C, etc.
-        const path = parts[parts.length - 1]; // Last part handles renames (old\tnew)
-        files.push({ status, path });
+        if (parts.length < 3) continue;
+        // numstat format: additions\tdeletions\tpath
+        const additions = parts[0] === "-" ? 0 : parseInt(parts[0], 10);
+        const deletions = parts[1] === "-" ? 0 : parseInt(parts[1], 10);
+        const path = parts[parts.length - 1];
+        files.push({ additions, deletions, path });
       }
 
       return {

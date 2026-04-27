@@ -69,10 +69,6 @@ function print() { __p += __j.call(arguments, '') }
   border-bottom: 1px solid #161b22;
   white-space: nowrap;
   cursor: crosshair;
-  background: ${({$selected:e})=>e?`#1c2333`:`transparent`};
-  &:hover {
-    background: ${({$selected:e})=>e?`#243046`:`#161b22`};
-  }
 `,ki=z.span`
   color: #79c0ff;
   font-size: 11px;

@@ -13,3 +13,4 @@ export interface Commit {
   merge?: string | null;
   files?: CommitFile[];
 }
+

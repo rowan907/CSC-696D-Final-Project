@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "preprocess:git": "node scripts/preprocess-git.mjs",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" \"scripts/**/*.mjs\"",
-    "predeploy": "npm run preprocess:git && npm run build",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

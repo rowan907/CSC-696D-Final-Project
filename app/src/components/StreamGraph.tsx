@@ -1,12 +1,6 @@
 import { useRef, useMemo, useEffect } from "react";
 import { select } from "d3-selection";
-import {
-  stack,
-  stackOffsetWiggle,
-  stackOrderInsideOut,
-  area,
-  curveBasis,
-} from "d3-shape";
+import { stack, stackOffsetWiggle, stackOrderInsideOut, area, curveBasis } from "d3-shape";
 import { scaleTime, scaleLinear } from "d3-scale";
 import { axisBottom } from "d3-axis";
 import type { Commit } from "../types/git";
@@ -85,10 +79,7 @@ export default function StreamGraph({ commits }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const streamData = useMemo(
-    () => buildStreamData(commits, NUM_COHORTS, NUM_SAMPLES),
-    [commits],
-  );
+  const streamData = useMemo(() => buildStreamData(commits, NUM_COHORTS, NUM_SAMPLES), [commits]);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -133,9 +124,7 @@ export default function StreamGraph({ commits }: Props) {
 
     const allY = series.flatMap((s) => s.flatMap((d) => [d[0], d[1]]));
     const absMax = Math.max(Math.abs(Math.min(...allY)), Math.abs(Math.max(...allY)));
-    const yScale = scaleLinear()
-      .domain([-absMax, absMax])
-      .range([innerH, 0]);
+    const yScale = scaleLinear().domain([-absMax, absMax]).range([innerH, 0]);
 
     // Area generator
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -158,8 +147,10 @@ export default function StreamGraph({ commits }: Props) {
 
     // Center axis line
     g.append("line")
-      .attr("x1", 0).attr("x2", innerW)
-      .attr("y1", yScale(0)).attr("y2", yScale(0))
+      .attr("x1", 0)
+      .attr("x2", innerW)
+      .attr("y1", yScale(0))
+      .attr("y2", yScale(0))
       .attr("stroke", "#8b949e")
       .attr("stroke-width", 1)
       .attr("stroke-dasharray", "4,3");
@@ -170,9 +161,7 @@ export default function StreamGraph({ commits }: Props) {
       .call(axisBottom(xScale).ticks(6).tickSize(-innerH))
       .call((ax) => {
         ax.select(".domain").remove();
-        ax.selectAll(".tick line")
-          .attr("stroke", "#21262d")
-          .attr("stroke-dasharray", "3,3");
+        ax.selectAll(".tick line").attr("stroke", "#21262d").attr("stroke-dasharray", "3,3");
         ax.selectAll(".tick text")
           .attr("fill", "#6e7681")
           .attr("font-size", 10)
@@ -184,7 +173,8 @@ export default function StreamGraph({ commits }: Props) {
       .append("g")
       .attr("transform", `translate(${margin.left + innerW + 16}, ${margin.top})`);
 
-    legendG.append("text")
+    legendG
+      .append("text")
       .attr("fill", "#6e7681")
       .attr("font-size", 9)
       .attr("letter-spacing", "0.06em")
@@ -197,31 +187,40 @@ export default function StreamGraph({ commits }: Props) {
     legendItems.forEach((date, li) => {
       const i = li * step >= numCohorts ? numCohorts - 1 : li * step;
       const row = legendG.append("g").attr("transform", `translate(0, ${li * 18 + 8})`);
-      row.append("rect")
-        .attr("width", 10).attr("height", 10).attr("y", -5).attr("rx", 2)
+      row
+        .append("rect")
+        .attr("width", 10)
+        .attr("height", 10)
+        .attr("y", -5)
+        .attr("rx", 2)
         .attr("fill", cohortColor(i, numCohorts));
-      row.append("text")
-        .attr("x", 14).attr("fill", "#8b949e").attr("font-size", 9).attr("dy", "0.35em")
+      row
+        .append("text")
+        .attr("x", 14)
+        .attr("fill", "#8b949e")
+        .attr("font-size", 9)
+        .attr("dy", "0.35em")
         .text(date.toLocaleDateString(undefined, { year: "numeric", month: "short" }));
     });
 
     // Annotation
-    root.append("text")
+    root
+      .append("text")
       .attr("x", margin.left + innerW / 2)
       .attr("y", H - 4)
       .attr("text-anchor", "middle")
       .attr("fill", "#3d444d")
       .attr("font-size", 9)
-      .text("band width = net lines of code · each file is charged to the cohort that introduced it");
-
+      .text(
+        "band width = net lines of code · each file is charged to the cohort that introduced it",
+      );
   }, [streamData]);
 
   if (commits.length === 0)
     return <p style={{ padding: 32, color: "#8b949e" }}>No commits selected.</p>;
   if (!commits.some((c) => c.files && c.files.length > 0))
     return <p style={{ padding: 32, color: "#8b949e" }}>No file data available.</p>;
-  if (!streamData)
-    return <p style={{ padding: 32, color: "#8b949e" }}>Not enough data.</p>;
+  if (!streamData) return <p style={{ padding: 32, color: "#8b949e" }}>Not enough data.</p>;
 
   return (
     <div ref={containerRef} style={{ width: "100%", height: "100%", overflow: "hidden" }}>

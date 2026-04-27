@@ -13,7 +13,7 @@ interface Props {
 }
 
 const MARGIN = { top: 6, right: 16, bottom: 20, left: 16 };
-const TOTAL_STEPS = 20;        // 20 × 5% = 100%
+const TOTAL_STEPS = 20; // 20 × 5% = 100%
 const STEP_MS = 2000;
 
 export default function CommitTimeline({ commits, onRangeChange }: Props) {
@@ -34,16 +34,20 @@ export default function CommitTimeline({ commits, onRangeChange }: Props) {
   const stepRef = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const withDates = useMemo(() =>
-    commits
-      .map((c) => ({ commit: c, date: new Date(c.date) }))
-      .filter(({ date }) => !isNaN(date.getTime())),
+  const withDates = useMemo(
+    () =>
+      commits
+        .map((c) => ({ commit: c, date: new Date(c.date) }))
+        .filter(({ date }) => !isNaN(date.getTime())),
     [commits],
   );
 
   // ── Playback helpers ────────────────────────────────────────────────────────
   const stopPlay = useCallback(() => {
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     setIsPlaying(false);
     stepRef.current = 0;
   }, []);
@@ -57,7 +61,10 @@ export default function CommitTimeline({ commits, onRangeChange }: Props) {
     if (!xScale || !brush || !brushG || !minDate || !maxDate) return;
 
     stepRef.current += 1;
-    if (stepRef.current > TOTAL_STEPS) { stopPlay(); return; }
+    if (stepRef.current > TOTAL_STEPS) {
+      stopPlay();
+      return;
+    }
 
     const pct = stepRef.current / TOTAL_STEPS;
     const endDate = new Date(minDate.getTime() + pct * (maxDate.getTime() - minDate.getTime()));
@@ -66,7 +73,10 @@ export default function CommitTimeline({ commits, onRangeChange }: Props) {
   }, [stopPlay]);
 
   const handlePlay = useCallback(() => {
-    if (isPlaying) { stopPlay(); return; }
+    if (isPlaying) {
+      stopPlay();
+      return;
+    }
     stepRef.current = 0;
     setIsPlaying(true);
     advanceStep();
@@ -74,18 +84,28 @@ export default function CommitTimeline({ commits, onRangeChange }: Props) {
   }, [isPlaying, stopPlay, advanceStep]);
 
   // Stop playback when commits change (repo switch, etc.)
-  useEffect(() => { stopPlay(); }, [commits, stopPlay]);
+  useEffect(() => {
+    stopPlay();
+  }, [commits, stopPlay]);
 
   // Cleanup on unmount
-  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    },
+    [],
+  );
 
   // ── Brush callbacks ─────────────────────────────────────────────────────────
-  const handleBrush = useCallback((x0: Date, x1: Date) => {
-    const filtered = withDates
-      .filter(({ date }) => date >= x0 && date <= x1)
-      .map(({ commit }) => commit);
-    onRangeChange(filtered.length > 0 ? filtered : commits, [x0, x1]);
-  }, [withDates, commits, onRangeChange]);
+  const handleBrush = useCallback(
+    (x0: Date, x1: Date) => {
+      const filtered = withDates
+        .filter(({ date }) => date >= x0 && date <= x1)
+        .map(({ commit }) => commit);
+      onRangeChange(filtered.length > 0 ? filtered : commits, [x0, x1]);
+    },
+    [withDates, commits, onRangeChange],
+  );
 
   const handleClear = useCallback(() => {
     onRangeChange(commits, null);
@@ -126,28 +146,43 @@ export default function CommitTimeline({ commits, onRangeChange }: Props) {
 
     g.append("rect").attr("width", innerW).attr("height", innerH).attr("fill", "#010409");
 
-    g.append("g").selectAll("rect")
-      .data(bins).join("rect")
+    g.append("g")
+      .selectAll("rect")
+      .data(bins)
+      .join("rect")
       .attr("x", (d) => xScale(d.x0!))
       .attr("width", (d) => Math.max(0, xScale(d.x1!) - xScale(d.x0!) - 1))
       .attr("y", (d) => yScale(d.length))
       .attr("height", (d) => innerH - yScale(d.length))
       .attr("fill", "#30363d");
 
-    g.append("g").attr("transform", `translate(0,${innerH})`)
-      .call(axisBottom(xScale).ticks(8).tickSize(3)
-        .tickFormat((d) => (d as Date).getFullYear().toString()))
+    g.append("g")
+      .attr("transform", `translate(0,${innerH})`)
+      .call(
+        axisBottom(xScale)
+          .ticks(8)
+          .tickSize(3)
+          .tickFormat((d) => (d as Date).getFullYear().toString()),
+      )
       .call((ax) => {
         ax.select(".domain").attr("stroke", "#30363d");
         ax.selectAll("line").attr("stroke", "#30363d");
-        ax.selectAll("text").attr("fill", "#6e7681").attr("font-size", 9)
+        ax.selectAll("text")
+          .attr("fill", "#6e7681")
+          .attr("font-size", 9)
           .attr("font-family", "ui-monospace, monospace");
       });
 
     const brush = brushX()
-      .extent([[0, 0], [innerW, innerH]])
+      .extent([
+        [0, 0],
+        [innerW, innerH],
+      ])
       .on("end", (event) => {
-        if (!event.selection) { handleClear(); return; }
+        if (!event.selection) {
+          handleClear();
+          return;
+        }
         const [px0, px1] = event.selection as [number, number];
         handleBrush(xScale.invert(px0), xScale.invert(px1));
       });
@@ -156,25 +191,39 @@ export default function CommitTimeline({ commits, onRangeChange }: Props) {
     const brushG = g.append("g").call(brush as Parameters<typeof g.call>[0]);
     brushGRef.current = brushG;
 
-    brushG.select(".selection")
-      .attr("fill", "#58a6ff").attr("fill-opacity", 0.12)
-      .attr("stroke", "#58a6ff").attr("stroke-opacity", 0.5).attr("stroke-width", 1);
+    brushG
+      .select(".selection")
+      .attr("fill", "#58a6ff")
+      .attr("fill-opacity", 0.12)
+      .attr("stroke", "#58a6ff")
+      .attr("stroke-opacity", 0.5)
+      .attr("stroke-width", 1);
     brushG.selectAll(".handle").attr("fill", "#58a6ff").attr("fill-opacity", 0.6);
     brushG.select(".overlay").attr("cursor", "crosshair");
-
   }, [withDates, handleBrush, handleClear]);
 
   return (
-    <div ref={containerRef} style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative" }}>
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative" }}
+    >
       <button
         onClick={handlePlay}
         title={isPlaying ? "Pause" : "Play: grow selection by 5% every 3 seconds"}
         style={{
-          position: "absolute", top: 4, right: 4, zIndex: 10,
+          position: "absolute",
+          top: 4,
+          right: 4,
+          zIndex: 10,
           background: isPlaying ? "#6e7681" : "#238636",
-          color: "#fff", border: "none", borderRadius: 4,
-          padding: "2px 10px", fontSize: 11, cursor: "pointer",
-          fontFamily: "ui-monospace, 'Cascadia Code', monospace", lineHeight: 1.6,
+          color: "#fff",
+          border: "none",
+          borderRadius: 4,
+          padding: "2px 10px",
+          fontSize: 11,
+          cursor: "pointer",
+          fontFamily: "ui-monospace, 'Cascadia Code', monospace",
+          lineHeight: 1.6,
         }}
       >
         {isPlaying ? "⏸ Pause" : "▶ Play"}

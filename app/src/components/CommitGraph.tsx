@@ -6,13 +6,29 @@ import type { Commit } from "../types/git";
 const LANE_W = 18;
 const ROW_H = 22;
 const DOT_R = 3.5;
-const COLORS = ["#58a6ff", "#f78166", "#3fb950", "#d2a8ff", "#ffa657", "#79c0ff", "#ff7b72"];
+const COLORS = [
+  "#58a6ff", // blue
+  "#f78166", // coral
+  "#3fb950", // green
+  "#d2a8ff", // purple
+  "#ffa657", // orange
+  "#79c0ff", // light blue
+  "#ff7b72", // red
+  "#56d364", // bright green
+  "#f778ba", // pink
+  "#ffd700", // gold
+  "#bc8cff", // lavender
+  "#ff9492", // salmon
+  "#7ee787", // mint
+  "#ffbc6f", // peach
+];
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface PlacedCommit extends Commit {
   lane: number;
   row: number;
   color: string;
+  currentMaxLane: number; // Maximum lane active at this row
 }
 interface LayoutResult {
   placed: PlacedCommit[];
@@ -67,7 +83,7 @@ const TextRow = styled.div<{ $selected: boolean }>`
   align-items: center;
   gap: 10px;
   height: ${ROW_H}px;
-  padding: 0 12px 0 6px;
+  padding: 0 12px 0 64px;
   border-bottom: 1px solid #161b22;
   white-space: nowrap;
   cursor: crosshair;
@@ -136,42 +152,87 @@ const BranchFilter = styled.span<{ $color: string }>`
 `;
 
 // ── Lane assignment ──────────────────────────────────────────────────────────
-// Dead simple: each branch name gets one fixed lane. Main is always lane 0.
-// Every commit sits in its branch's lane. Lines connect to parents across lanes.
-// Branches are assigned lanes in the order they first appear (top to bottom).
+// Strategy: Main branch ALWAYS gets lane 0 (leftmost position).
+// Other branches get lanes dynamically allocated as needed.
+// Once a branch is merged and has no future commits, its lane is freed for reuse.
 
 function buildLayout(commits: Commit[], mainBranch: string): LayoutResult {
-  // 1. Assign a color and lane to each branch name
   const branchLane = new Map<string, number>();
   const branchColor = new Map<string, string>();
-  let colorIdx = 0;
-  let nextLane = 1; // 0 is reserved for main
 
+  // Main branch always gets lane 0
   branchLane.set(mainBranch, 0);
   branchColor.set(mainBranch, COLORS[0]);
-  colorIdx = 1;
 
-  // First pass: discover branches in order of appearance
-  for (const c of commits) {
+  let colorIdx = 1;
+
+  // Track which lanes are currently in use
+  const activeLanes = new Set<number>([0]); // Lane 0 is always active (main)
+  const laneForBranch = new Map<string, number>(); // Current lane assignments
+  laneForBranch.set(mainBranch, 0);
+
+  // Find the last row each branch appears at
+  const lastRowPerBranch = new Map<string, number>();
+  commits.forEach((c, row) => {
     const branch = c.branch ?? mainBranch;
-    if (!branchLane.has(branch)) {
-      branchLane.set(branch, nextLane++);
-      branchColor.set(branch, nth(COLORS, colorIdx++ % COLORS.length)!);
+    if (!lastRowPerBranch.has(branch) || lastRowPerBranch.get(branch)! < row) {
+      lastRowPerBranch.set(branch, row);
+    }
+  });
+
+  // Assign lanes dynamically, row by row
+  const placed: PlacedCommit[] = [];
+  let maxLanes = 1; // Track the maximum number of concurrent lanes
+
+  for (let row = 0; row < commits.length; row++) {
+    const c = commits[row];
+    const branch = c.branch ?? mainBranch;
+
+    // Get or assign a lane for this branch
+    let lane: number;
+    if (laneForBranch.has(branch)) {
+      lane = laneForBranch.get(branch)!;
+    } else {
+      // Find the first available lane (reuse freed lanes)
+      lane = 1;
+      while (activeLanes.has(lane)) {
+        lane++;
+      }
+
+      laneForBranch.set(branch, lane);
+      activeLanes.add(lane);
+
+      // Assign a color
+      if (!branchColor.has(branch)) {
+        branchColor.set(branch, nth(COLORS, colorIdx++ % COLORS.length)!);
+      }
+    }
+
+    // Store the lane assignment for this branch
+    branchLane.set(branch, lane);
+
+    // Track the maximum number of concurrent lanes globally
+    maxLanes = Math.max(maxLanes, activeLanes.size);
+
+    // Find the current maximum lane number in use at this row
+    const currentMaxLane = Math.max(...Array.from(activeLanes));
+
+    placed.push({
+      ...c,
+      lane,
+      row,
+      color: branchColor.get(branch)!,
+      currentMaxLane, // Store the max lane at this row
+    });
+
+    // If this is the last row for this branch, free its lane (unless it's main)
+    if (branch !== mainBranch && lastRowPerBranch.get(branch) === row) {
+      activeLanes.delete(lane);
+      laneForBranch.delete(branch);
     }
   }
 
-  // 2. Place every commit in its branch's lane
-  const placed: PlacedCommit[] = commits.map((c, row) => {
-    const branch = c.branch ?? mainBranch;
-    return {
-      ...c,
-      lane: branchLane.get(branch)!,
-      row,
-      color: branchColor.get(branch)!,
-    };
-  });
-
-  return { placed, maxLanes: nextLane };
+  return { placed, maxLanes };
 }
 
 // ── SVG helpers ───────────────────────────────────────────────────────────────
@@ -182,9 +243,55 @@ function cy(row: number) {
   return row * ROW_H + ROW_H / 2;
 }
 function curvePath(x1: number, y1: number, x2: number, y2: number): string {
-  if (x1 === x2) return `M ${x1} ${y1} L ${x2} ${y2}`;
-  const dy = y2 - y1;
-  return `M ${x1} ${y1} C ${x1} ${y1 + dy * 0.4}, ${x2} ${y2 - dy * 0.4}, ${x2} ${y2}`;
+  // Straight vertical line (same lane)
+  if (x1 === x2) {
+    return `M ${x1} ${y1} L ${x2} ${y2}`;
+  }
+
+  // Lines connecting different lanes - use rounded 90-degree turns
+  const radius = Math.min(8, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2);
+  const midY = y1 + (y2 - y1) / 2;
+
+  // Determine direction
+  const goingRight = x2 > x1;
+
+  // Path: vertical down -> rounded turn -> horizontal -> rounded turn -> vertical down
+  if (Math.abs(y2 - y1) > radius * 2) {
+    // Enough vertical space for two turns
+    const turn1Y = midY - radius;
+    const turn2Y = midY + radius;
+
+    if (goingRight) {
+      // Moving right: turn clockwise at top, counter-clockwise at bottom
+      return `M ${x1} ${y1} 
+              L ${x1} ${turn1Y} 
+              Q ${x1} ${midY} ${x1 + radius} ${midY}
+              L ${x2 - radius} ${midY}
+              Q ${x2} ${midY} ${x2} ${turn2Y}
+              L ${x2} ${y2}`;
+    } else {
+      // Moving left: turn counter-clockwise at top, clockwise at bottom
+      return `M ${x1} ${y1} 
+              L ${x1} ${turn1Y} 
+              Q ${x1} ${midY} ${x1 - radius} ${midY}
+              L ${x2 + radius} ${midY}
+              Q ${x2} ${midY} ${x2} ${turn2Y}
+              L ${x2} ${y2}`;
+    }
+  } else {
+    // Not enough space - simple rounded corner
+    if (goingRight) {
+      return `M ${x1} ${y1} 
+              L ${x1} ${y2 - radius}
+              Q ${x1} ${y2} ${x1 + radius} ${y2}
+              L ${x2} ${y2}`;
+    } else {
+      return `M ${x1} ${y1} 
+              L ${x1} ${y2 - radius}
+              Q ${x1} ${y2} ${x1 - radius} ${y2}
+              L ${x2} ${y2}`;
+    }
+  }
 }
 
 // ── Reachability filter ───────────────────────────────────────────────────────
@@ -199,7 +306,7 @@ function filterToMainBranch(commits: Commit[], mainBranch: string): Commit[] {
     const hash = queue.shift()!;
     if (reachable.has(hash)) continue;
     reachable.add(hash);
-    byHash[hash]?.parents.forEach((p) => queue.push(p));
+    byHash[hash]?.parents.forEach((p) => queue.push(p.hash));
   }
   return commits.filter((c) => reachable.has(c.hash));
 }
@@ -212,11 +319,16 @@ interface Props {
   skipBranchFilter?: boolean;
 }
 
-export default function CommitGraph({ commits, mainBranch, onSelectionChange, skipBranchFilter }: Props) {
+export default function CommitGraph({
+  commits,
+  mainBranch,
+  onSelectionChange,
+  skipBranchFilter,
+}: Props) {
   // Filter to only commits reachable from main (includes merged feature branches)
   // Skip when commits are already pre-filtered (e.g. by timeline), since parent links may be broken
   const filtered = useMemo(
-    () => skipBranchFilter ? commits : filterToMainBranch(commits, mainBranch),
+    () => (skipBranchFilter ? commits : filterToMainBranch(commits, mainBranch)),
     [commits, mainBranch, skipBranchFilter],
   );
   const { placed, maxLanes } = useMemo(
@@ -337,23 +449,67 @@ export default function CommitGraph({ commits, mainBranch, onSelectionChange, sk
         )}
         <GraphArea>
           <GraphSvg width={svgW} height={svgH}>
+            {/* Draw continuous lines for each lane */}
+            {placed.map((c, idx) => {
+              const nextInLane = placed.slice(idx + 1).find((n) => n.lane === c.lane);
+              if (!nextInLane) return null;
+
+              // Draw vertical line to next commit in same lane
+              const isActiveBranch = activeBranch && c.branch === activeBranch.name;
+              const dimmed = activeBranch && !isActiveBranch;
+
+              return (
+                <line
+                  key={`lane-${c.hash}-${nextInLane.hash}`}
+                  x1={cx(c.lane)}
+                  y1={cy(c.row)}
+                  x2={cx(nextInLane.lane)}
+                  y2={cy(nextInLane.row)}
+                  stroke={c.color}
+                  strokeWidth={1.5}
+                  opacity={dimmed ? 0.08 : 0.6}
+                />
+              );
+            })}
+
+            {/* Draw parent connections (for merges and cross-lane connections) */}
             {placed.map((c) =>
-              c.parents.map((pHash) => {
-                const parent = byHash[pHash];
-                if (!parent) return null;
-                const crossLane = c.lane !== parent.lane;
+              c.parents.map((parent) => {
+                const parentPlaced = byHash[parent.hash];
+                if (!parentPlaced) return null;
+
+                // Skip if this is just connecting to the next commit in the same lane
+                // (already drawn above)
+                const nextInLane = placed.find((n, idx) =>
+                  idx > c.row && n.lane === c.lane && n.row > c.row
+                );
+                if (nextInLane && parentPlaced.hash === nextInLane.hash) {
+                  return null;
+                }
+
+                const crossLane = c.lane !== parentPlaced.lane;
 
                 // Determine line color (same logic as stroke)
-                const lineColor = crossLane ? (c.lane > parent.lane ? c.color : parent.color) : c.color;
+                const lineColor = crossLane
+                  ? c.lane > parentPlaced.lane
+                    ? c.color
+                    : parentPlaced.color
+                  : c.color;
 
-                // Only highlight lines that match the active branch's color
-                const isActiveColor = activeBranch && lineColor === activeBranch.color;
-                const dimmed = activeBranch && !isActiveColor;
+                // Only highlight lines where BOTH commits belong to the active branch
+                const isActiveBranch = activeBranch &&
+                  c.branch === activeBranch.name && parentPlaced.branch === activeBranch.name;
+                const dimmed = activeBranch && !isActiveBranch;
 
                 return (
                   <path
-                    key={`${c.hash}-${pHash}`}
-                    d={curvePath(cx(c.lane), cy(c.row), cx(parent.lane), cy(parent.row))}
+                    key={`${c.hash}-${parent.hash}`}
+                    d={curvePath(
+                      cx(c.lane),
+                      cy(c.row),
+                      cx(parentPlaced.lane),
+                      cy(parentPlaced.row),
+                    )}
                     stroke={lineColor}
                     strokeWidth={crossLane ? 2 : 1.5}
                     fill="none"
@@ -401,11 +557,17 @@ export default function CommitGraph({ commits, mainBranch, onSelectionChange, sk
           <TextColumn>
             {placed.map((c) => {
               const dimRow = activeBranch ? c.branch !== activeBranch.name : false;
+              // Pull text left by the number of unused lanes
+              const unusedLanes = maxLanes - c.currentMaxLane;
+              const pullLeft = unusedLanes * LANE_W;
               return (
                 <TextRow
                   key={c.hash}
                   $selected={!activeBranch && isRowSelected(c.row)}
-                  style={{ opacity: dimRow ? 0.3 : 1 }}
+                  style={{
+                    opacity: dimRow ? 0.3 : 1,
+                    marginLeft: `-${pullLeft}px`,
+                  }}
                 >
                   <Hash>{c.hash.slice(0, 7)}</Hash>
                   {c.merge && c.merge !== c.branch && (

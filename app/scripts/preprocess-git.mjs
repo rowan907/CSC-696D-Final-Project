@@ -22,6 +22,47 @@ const maxCount = parseInt(process.argv[2] ?? "4500", 10);
 const gitDataDir = resolve(root, "git_data");
 const outDir = resolve(root, "public");
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Git Helper Functions
+// ═══════════════════════════════════════════════════════════════════════════
+
+function runGit(gitDir, command) {
+  return execSync(`git --git-dir="${gitDir}" ${command}`, {
+    encoding: "utf8",
+    maxBuffer: 100 * 1024 * 1024,
+  }).trim();
+}
+
+function parseNumstat(numstatOutput) {
+  const files = [];
+  for (const line of numstatOutput.split("\n").filter(Boolean)) {
+    const [add, del, ...pathParts] = line.split("\t");
+    if (!del || !pathParts.length) continue;
+    files.push({
+      path: pathParts.join("\t"), // Handle paths with tabs
+      additions: add === "-" ? 0 : parseInt(add, 10),
+      deletions: del === "-" ? 0 : parseInt(del, 10),
+    });
+  }
+  return files;
+}
+
+function extractMergeBranch(subject) {
+  // "Merge branch 'feature-x'" or "Merge pull request #123 from user/feature-x"
+  const patterns = [/^Merge branch '([^']+)'/i, /^Merge pull request #\d+ from (?:[^/]+\/)?(.+)$/i];
+
+  for (const pattern of patterns) {
+    const match = subject.match(pattern);
+    if (match) return match[1].trim();
+  }
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Main Processing
+// ═══════════════════════════════════════════════════════════════════════════
+
 const repos = readdirSync(gitDataDir).filter((name) =>
   statSync(join(gitDataDir, name)).isDirectory(),
 );
@@ -31,206 +72,156 @@ if (repos.length === 0) {
   process.exit(1);
 }
 
-const fmt = "---COMMIT_START---\n%H\x1f%P\x1f%an\x1f%ai\x1f%s";
-
 for (const repoName of repos) {
   const gitDir = join(gitDataDir, repoName);
   const outFile = join(outDir, `${repoName}_commits.json`);
 
-  // ── 1. Get all branch ref tips using for-each-ref ────────────────────────
-  const refTips = new Map(); // hash → branchName
+  console.log(`\nProcessing ${repoName}...`);
+
   try {
-    const refsRaw = execSync(
-      `git --git-dir="${gitDir}" for-each-ref --format="%(objectname) %(refname:short)" refs/heads refs/remotes/origin`,
-      { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 },
-    );
-    for (const line of refsRaw.trim().split("\n").filter(Boolean)) {
-      const spaceIdx = line.indexOf(" ");
-      const hash = line.slice(0, spaceIdx);
-      const fullRef = line.slice(spaceIdx + 1);
-      const name = fullRef.replace(/^origin\//, "");
-      // Skip HEAD and prefer shorter names
-      if (name === "HEAD" || name === "origin") continue;
-      if (!refTips.has(hash) || name.length < refTips.get(hash).length) {
-        refTips.set(hash, name);
-      }
-    }
-  } catch (err) {
-    console.warn(`⚠ Could not read refs for ${repoName}: ${err.message}`);
-  }
+    // ── Step 1: Get all commit hashes ──────────────────────────────────────
+    const hashes = runGit(gitDir, `log --all --topo-order --format="%H" --max-count=${maxCount}`)
+      .split("\n")
+      .filter(Boolean);
 
-  // ── 2. Load the full commit log ───────────────────────────────────────────
-  let raw;
-  try {
-    raw = execSync(
-      `git --git-dir="${gitDir}" log --all --topo-order --pretty=format:"${fmt}" --numstat --max-count=${maxCount}`,
-      { encoding: "utf8", maxBuffer: 100 * 1024 * 1024 },
-    );
-  } catch (err) {
-    console.warn(`⚠ Skipping ${repoName}: ${err.message}`);
-    continue;
-  }
+    console.log(`  Found ${hashes.length} commits`);
 
-  const rows = raw
-    .split("---COMMIT_START---\n")
-    .filter(Boolean)
-    .map((block) => {
-      const lines = block.split("\n");
-      const [hash, parentsRaw, author, date, ...subjectParts] = lines[0].split("\x1f");
+    // ── Step 2: Get commit details ─────────────────────────────────────────
+    const commits = [];
+    const commitMap = new Map();
 
-      const files = [];
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line.trim()) continue;
-        const parts = line.split("\t");
-        if (parts.length < 3) continue;
-        // numstat format: additions\tdeletions\tpath
-        const additions = parts[0] === "-" ? 0 : parseInt(parts[0], 10);
-        const deletions = parts[1] === "-" ? 0 : parseInt(parts[1], 10);
-        const path = parts[parts.length - 1];
-        files.push({ additions, deletions, path });
+    for (let i = 0; i < hashes.length; i++) {
+      const hash = hashes[i];
+
+      if (i % 100 === 0) {
+        console.log(`  Processing ${i + 1}/${hashes.length}...`);
       }
 
-      return {
-        hash,
-        parents: parentsRaw ? parentsRaw.split(" ").filter(Boolean) : [],
-        author,
-        date,
-        subject: subjectParts.join("\x1f"),
-        files,
-      };
-    });
+      try {
+        // Get commit info: author, date, subject, parents
+        const info = runGit(gitDir, `show --format="%an%x1f%ai%x1f%s%x1f%P" --quiet "${hash}"`);
+        const [author, date, subject, parentsStr] = info.split("\x1f");
+        const parents = parentsStr ? parentsStr.split(" ").filter(Boolean) : [];
 
-  const commitMap = new Map(rows.map((c) => [c.hash, c]));
+        // Get files modified
+        const numstat = runGit(gitDir, `show --format="" --numstat "${hash}"`);
+        const files = parseNumstat(numstat);
 
-  // ── 3. Assign a branch to every commit ────────────────────────────────────
-  // Walk main's first-parent chain, labeling as main.
-  // For merge commits, extract the feature branch name from the subject
-  // and label the second parent's first-parent chain with that name.
-
-  const branchOf = new Map(); // hash → branchName
-  const isMainBranch = (name) => name === "main" || name === "master";
-
-  // Find the main branch ref
-  const mainRef = [...refTips.entries()].find(([, name]) => isMainBranch(name));
-  const mainName = mainRef?.[1] ?? "main";
-  const mainTip = mainRef?.[0] ?? rows[0]?.hash;
-
-  // Helper to extract branch name from merge commit subject
-  const parseMergeBranch = (subject) => {
-    // "Merge branch 'feature-x'"
-    const branchMatch = subject.match(/^Merge branch '([^']+)'/i);
-    if (branchMatch) return branchMatch[1];
-
-    // "Merge pull request #123 from user/feature-x"
-    const prMatch = subject.match(/^Merge pull request #\d+ from (?:[^/]+\/)?(.+)$/i);
-    if (prMatch) return prMatch[1].trim();
-
-    return null;
-  };
-
-  // Generate a branch name from commit subject when no explicit name
-  const generateBranchName = (subject) => {
-    const s = subject.toLowerCase().trim();
-
-    // Common conventional commit prefixes
-    const prefixMatch = s.match(/^(fix|feat|feature|chore|docs|refactor|test|perf|ci|build)[\s:(]/);
-    if (prefixMatch) {
-      const prefix = prefixMatch[1];
-      // Extract a short descriptor
-      const rest = s.slice(prefix.length).replace(/^[\s:(\[]+/, '').split(/[\s,)\]]/)[0];
-      if (rest && rest.length > 2 && rest.length < 20) {
-        return `${prefix}/${rest}`;
+        const commit = { hash, parents, author, date, subject, files };
+        commits.push(commit);
+        commitMap.set(hash, commit);
+      } catch (err) {
+        console.warn(`  ⚠ Skipping commit ${hash.slice(0, 7)}: ${err.message}`);
       }
-      return prefix;
     }
 
-    // Extract first meaningful word
-    const words = s.split(/\s+/).filter(w =>
-      w.length > 3 && !/^(the|and|for|with|from|into|this|that|when|added|fixed|updated)$/i.test(w)
-    );
-    if (words[0]) {
-      const word = words[0].replace(/[^a-z0-9-]/gi, '').slice(0, 15);
-      if (word.length > 2) return `feature/${word}`;
+    console.log(`  Assigning branches...`);
+
+    // ── Step 3: Assign branch names ────────────────────────────────────────
+    // Detect main branch name from git refs
+    let mainName = "main";
+    try {
+      const refs = runGit(
+        gitDir,
+        `for-each-ref --format="%(refname:short)" refs/heads/main refs/heads/master refs/remotes/origin/main refs/remotes/origin/master`,
+      );
+      const ref = refs.split("\n").filter(Boolean)[0];
+      if (ref) {
+        mainName = ref.replace(/^origin\//, "").replace(/^refs\/heads\//, "");
+      }
+    } catch (err) {
+      // Default to "main" if detection fails
     }
 
-    return null;
-  };
+    const branchOf = new Map();
 
-  // Label first-parent chain (stops at shared history)
-  const labelFirstParentChain = (startHash, branchName) => {
-    let hash = startHash;
-    while (hash && commitMap.has(hash)) {
-      if (branchOf.has(hash)) break;
-      branchOf.set(hash, branchName);
-      const c = commitMap.get(hash);
-      hash = c.parents[0] ?? null;
+    // Simple strategy: walk first-parent chains from main
+    function assignBranch(startHash, branchName) {
+      let hash = startHash;
+      while (hash && commitMap.has(hash)) {
+        if (branchOf.has(hash)) break; // Already assigned
+        branchOf.set(hash, branchName);
+
+        const commit = commitMap.get(hash);
+
+        // For merges, assign branch to second parent chain
+        if (commit.parents.length > 1) {
+          const secondParent = commit.parents[1];
+          const mergedBranch = extractMergeBranch(commit.subject);
+          if (secondParent && mergedBranch && !branchOf.has(secondParent)) {
+            assignBranch(secondParent, mergedBranch);
+          }
+        }
+
+        hash = commit.parents[0]; // Follow first parent
+      }
     }
-  };
 
-  // Walk main's first-parent chain
-  let hash = mainTip;
-  while (hash && commitMap.has(hash)) {
-    if (branchOf.has(hash)) break;
-    branchOf.set(hash, mainName);
-    const c = commitMap.get(hash);
+    assignBranch(commits[0]?.hash, mainName);
 
-    // For merge commits, label second parent chain as feature branch
-    if (c.parents.length > 1) {
-      const secondParent = c.parents[1];
-      if (commitMap.has(secondParent) && !branchOf.has(secondParent)) {
-        const secondCommit = commitMap.get(secondParent);
-        const featureBranch = parseMergeBranch(c.subject) || generateBranchName(secondCommit.subject);
-        if (featureBranch) {
-          labelFirstParentChain(secondParent, featureBranch);
+    // For any remaining commits, try to infer their branch from merge commits
+    // Don't just default everything to main!
+    for (const commit of commits) {
+      if (!branchOf.has(commit.hash)) {
+        // Check if this commit is mentioned in a merge
+        let foundBranch = null;
+
+        for (const otherCommit of commits) {
+          if (otherCommit.parents.length > 1 &&
+              otherCommit.parents[1] === commit.hash) {
+            // This commit is the second parent of a merge
+            foundBranch = extractMergeBranch(otherCommit.subject);
+            if (foundBranch) {
+              assignBranch(commit.hash, foundBranch);
+              break;
+            }
+          }
+        }
+
+        // If still not assigned, use a feature branch name
+        if (!branchOf.has(commit.hash)) {
+          const shortSubject = commit.subject
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .slice(0, 20);
+          branchOf.set(commit.hash, shortSubject || `feature-${commit.hash.slice(0, 7)}`);
         }
       }
     }
 
-    hash = c.parents[0] ?? null;
-  }
-
-  // Everything else is main
-  for (const c of rows) {
-    if (!branchOf.has(c.hash)) {
-      branchOf.set(c.hash, mainName);
-    }
-  }
-
-  // ── 4. Build final output ─────────────────────────────────────────────────
-  const commits = rows.map((c) => {
-    const branch = branchOf.get(c.hash) ?? null;
-    const isMerge = c.parents.length > 1;
-
-    const result = {
+    // ── Step 4: Build output with children ─────────────────────────────────
+    // First, create the base output
+    const output = commits.map((c) => ({
       hash: c.hash,
       parents: c.parents,
+      children: [], // Will populate in next step
       author: c.author,
       date: c.date,
       subject: c.subject,
-      branch,
+      branch: branchOf.get(c.hash) || null,
+      merge: c.parents.length > 1 ? extractMergeBranch(c.subject) : undefined,
       files: c.files,
-    };
+    }));
 
-    if (isMerge) {
-      // Try to derive a meaningful merge source name
-      const secondParentBranch = branchOf.get(c.parents[1]) ?? null;
-      const subjectBranch = c.subject.match(/^Merge branch '([^']+)'/i)?.[1] ?? null;
-      const subjectPR =
-        c.subject.match(/^Merge pull request #\d+ from (?:[^/]+\/)?(.+)$/i)?.[1]?.trim() ?? null;
+    // Build hash lookup
+    const outputMap = new Map(output.map((c) => [c.hash, c]));
 
-      // Only use secondParentBranch if it differs from this commit's branch
-      // (otherwise it's a useless self-reference)
-      const mergeSource =
-        (secondParentBranch && secondParentBranch !== branch ? secondParentBranch : null) ??
-        subjectBranch ??
-        subjectPR;
-      if (mergeSource) result.merge = mergeSource;
+    // Populate children by inverting parent relationships
+    for (const commit of output) {
+      for (const parentHash of commit.parents) {
+        const parent = outputMap.get(parentHash);
+        if (parent) {
+          parent.children.push(commit.hash);
+        }
+      }
     }
 
-    return result;
-  });
-
-  writeFileSync(outFile, JSON.stringify(commits, null, 2));
-  console.log(`✓ ${repoName} → ${commits.length} commits → public/${repoName}_commits.json`);
+    // ── Step 5: Write output ───────────────────────────────────────────────
+    writeFileSync(outFile, JSON.stringify(output, null, 2));
+    console.log(`  ✓ Wrote ${output.length} commits → public/${repoName}_commits.json`);
+  } catch (err) {
+    console.error(`  ✗ Failed to process ${repoName}: ${err.message}`);
+  }
 }
+
+console.log("\n✅ Done!");

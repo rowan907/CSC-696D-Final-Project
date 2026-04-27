@@ -8,7 +8,7 @@ import FileClusterMap from "./components/FileClusterMap";
 import CommitTimeline from "./components/CommitTimeline";
 import StreamGraph from "./components/StreamGraph";
 import TestViz from "./components/TestViz";
-import type { Commit } from "./types/git";
+import type { Commit, CommitFile } from "./types/git";
 
 const GlobalStyle = createGlobalStyle`
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -271,7 +271,51 @@ const Status = styled.p<{ $error?: boolean }>`
 async function fetchCommits(repoKey: string): Promise<Commit[]> {
   const res = await fetch(`${import.meta.env.BASE_URL}${repoKey}_commits.json`);
   if (!res.ok) throw new Error(`Failed to fetch commits for ${repoKey}`);
-  return res.json();
+
+  // JSON contains parent/children hashes as strings, we need to convert to Commit references
+  interface CommitRaw {
+    hash: string;
+    parents: string[];
+    children: string[];
+    author: string;
+    date: string;
+    subject: string;
+    branch: string | null;
+    merge?: string | null;
+    files?: CommitFile[];
+  }
+
+  const rawCommits: CommitRaw[] = await res.json();
+  const commitMap = new Map<string, Commit>();
+
+  // First pass: create all commit objects with empty parents/children arrays
+  for (const raw of rawCommits) {
+    const commit: Commit = {
+      hash: raw.hash,
+      parents: [],
+      children: [],
+      author: raw.author,
+      date: raw.date,
+      subject: raw.subject,
+      branch: raw.branch,
+      merge: raw.merge,
+      files: raw.files,
+    };
+    commitMap.set(raw.hash, commit);
+  }
+
+  // Second pass: populate parent and children references
+  for (const raw of rawCommits) {
+    const commit = commitMap.get(raw.hash)!;
+    commit.parents = raw.parents
+      .map((hash) => commitMap.get(hash))
+      .filter((p): p is Commit => p !== undefined);
+    commit.children = raw.children
+      .map((hash) => commitMap.get(hash))
+      .filter((c): c is Commit => c !== undefined);
+  }
+
+  return Array.from(commitMap.values());
 }
 
 export default function App() {
@@ -289,7 +333,8 @@ export default function App() {
   const repoConfig = find(REPOS, { key: activeRepo })!;
   const vizConfig = find(VIZS, { key: activeViz })!;
 
-  const graphCommits = activeViz === "clustermap" ? (timeFilteredCommits ?? data ?? []) : (data ?? []);
+  const graphCommits =
+    activeViz === "clustermap" ? (timeFilteredCommits ?? data ?? []) : (data ?? []);
   const cloudCommits = selectedCommits.length > 0 ? selectedCommits : (data ?? []);
   const clusterCommits = timeFilteredCommits ?? cloudCommits;
 
@@ -396,7 +441,13 @@ export default function App() {
             </PaneLabel>
             <PaneContent>
               {activeViz === "wordcloud" && <WordCloud commits={cloudCommits} />}
-              {activeViz === "clustermap" && <FileClusterMap commits={clusterCommits} allCommits={data ?? []} repoKey={activeRepo} />}
+              {activeViz === "clustermap" && (
+                <FileClusterMap
+                  commits={clusterCommits}
+                  allCommits={data ?? []}
+                  repoKey={activeRepo}
+                />
+              )}
               {activeViz === "streamgraph" && <StreamGraph commits={data ?? []} />}
               {activeViz === "test" && <TestViz />}
             </PaneContent>
@@ -412,9 +463,7 @@ export default function App() {
                 : " · drag to filter by date range"}
             </TimelineLabel>
             <TimelineContent>
-              {data && (
-                <CommitTimeline commits={data} onRangeChange={handleTimelineChange} />
-              )}
+              {data && <CommitTimeline commits={data} onRangeChange={handleTimelineChange} />}
             </TimelineContent>
           </TimelineStrip>
         )}

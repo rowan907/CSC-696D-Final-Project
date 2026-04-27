@@ -6,7 +6,8 @@ export interface CommitFile {
 
 export interface Commit {
   hash: string;
-  parents: string[];
+  parents: Commit[];
+  children: Commit[];
   author: string;
   date: string;
   subject: string;
@@ -14,4 +15,3 @@ export interface Commit {
   merge?: string | null;
   files?: CommitFile[];
 }
-

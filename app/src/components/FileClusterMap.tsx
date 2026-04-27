@@ -84,15 +84,22 @@ function buildGraph(
 
   for (const commit of commits) {
     if (!commit.files || commit.files.length === 0) continue;
-    const paths = [...new Set(
-      commit.files.map((f) => f.path).filter((p) => !excludeHidden || !isHidden(p)),
-    )];
+    const paths = [
+      ...new Set(commit.files.map((f) => f.path).filter((p) => !excludeHidden || !isHidden(p))),
+    ];
 
-    const nodeKeys = [...new Set(paths.map((p) => {
-      const dir = topDir(p);
-      if (expanded.has(dir)) { fileNodeKeys.add(p); return p; }
-      return dir;
-    }))];
+    const nodeKeys = [
+      ...new Set(
+        paths.map((p) => {
+          const dir = topDir(p);
+          if (expanded.has(dir)) {
+            fileNodeKeys.add(p);
+            return p;
+          }
+          return dir;
+        }),
+      ),
+    ];
 
     for (const key of nodeKeys) {
       nodeCount.set(key, (nodeCount.get(key) ?? 0) + 1);
@@ -101,7 +108,8 @@ function buildGraph(
     if (nodeKeys.length > 50) continue;
     for (let i = 0; i < nodeKeys.length; i++) {
       for (let j = i + 1; j < nodeKeys.length; j++) {
-        const a = nodeKeys[i], b = nodeKeys[j];
+        const a = nodeKeys[i],
+          b = nodeKeys[j];
         if (a === b) continue;
         const key = a < b ? `${a}|||${b}` : `${b}|||${a}`;
         coCount.set(key, (coCount.get(key) ?? 0) + 1);
@@ -111,9 +119,7 @@ function buildGraph(
 
   const nodes: Node[] = [...nodeCount.entries()].map(([id, count]) => {
     const isDir = !fileNodeKeys.has(id);
-    const dir = fileNodeKeys.has(id)
-      ? (id.includes("/") ? id.split("/")[0] : "(root)")
-      : id;
+    const dir = fileNodeKeys.has(id) ? (id.includes("/") ? id.split("/")[0] : "(root)") : id;
     return { id, label: isDir ? id : (id.split("/").pop() ?? id), isDir, count, dir };
   });
 
@@ -194,19 +200,26 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       g.append("g").attr("class", "links");
       g.append("g").attr("class", "nodes");
       root.append("g").attr("class", "legend").attr("transform", "translate(12,12)");
-      root.append("text").attr("class", "hint")
-        .attr("x", W - 12).attr("y", H - 10)
-        .attr("text-anchor", "end").attr("font-size", 9).attr("fill", "#6e7681")
+      root
+        .append("text")
+        .attr("class", "hint")
+        .attr("x", W - 12)
+        .attr("y", H - 10)
+        .attr("text-anchor", "end")
+        .attr("font-size", 9)
+        .attr("fill", "#6e7681")
         .text("double-click directory to expand · double-click file to collapse");
 
-      const zoom = d3Zoom.zoom<SVGSVGElement, unknown>()
+      const zoom = d3Zoom
+        .zoom<SVGSVGElement, unknown>()
         .scaleExtent([0.15, 6])
         .filter((event) => event.type !== "dblclick")
         .on("zoom", (event) => root.select("g.main").attr("transform", event.transform));
       root.call(zoom);
 
       // Create simulation once
-      simRef.current = d3Force.forceSimulation<Node>([])
+      simRef.current = d3Force
+        .forceSimulation<Node>([])
         .force("charge", d3Force.forceManyBody().strength(-180))
         .force("center", d3Force.forceCenter(W / 2, H / 2))
         .stop();
@@ -236,7 +249,8 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
           ...n,
           x: parent?.x ?? W / 2 + (Math.random() - 0.5) * 80,
           y: parent?.y ?? H / 2 + (Math.random() - 0.5) * 80,
-          vx: 0, vy: 0,
+          vx: 0,
+          vy: 0,
         });
       }
     }
@@ -260,14 +274,24 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     // ── Update simulation forces & nodes ─────────────────────────────────────
     sim
       .nodes(simNodes)
-      .force("link", d3Force.forceLink<Node, Link>(simLinks)
-        .id((d) => d.id).distance(90).strength((d) => linkStrength((d as Link & {weight:number}).weight)))
-      .force("collision", d3Force.forceCollide<Node>().radius((d) => nodeRadius(d.count) + 5))
+      .force(
+        "link",
+        d3Force
+          .forceLink<Node, Link>(simLinks)
+          .id((d) => d.id)
+          .distance(90)
+          .strength((d) => linkStrength((d as Link & { weight: number }).weight)),
+      )
+      .force(
+        "collision",
+        d3Force.forceCollide<Node>().radius((d) => nodeRadius(d.count) + 5),
+      )
       .alpha(0.3)
       .restart();
 
     // ── D3 join — Links ──────────────────────────────────────────────────────
-    const linkEl = g.select<SVGGElement>("g.links")
+    const linkEl = g
+      .select<SVGGElement>("g.links")
       .selectAll<SVGLineElement, Link>("line")
       .data(simLinks, (d) => `${(d.source as Node).id}|||${(d.target as Node).id}`)
       .join("line")
@@ -278,7 +302,8 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       .attr("stroke-width", (d) => linkWidth((d as Link & { weight: number }).weight));
 
     // ── D3 join — Nodes ──────────────────────────────────────────────────────
-    const nodeEl = g.select<SVGGElement>("g.nodes")
+    const nodeEl = g
+      .select<SVGGElement>("g.nodes")
       .selectAll<SVGGElement, Node>("g.node")
       .data(simNodes, (d) => d.id)
       .join((enter) => {
@@ -289,38 +314,48 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
         return ge;
       });
 
-    nodeEl.select("circle")
+    nodeEl
+      .select("circle")
       .attr("r", (d) => nodeRadius(d.count))
-      .attr("fill", (d) => d.isDir ? dirColor(d.dir, stableDirs) : "transparent")
-      .attr("fill-opacity", (d) => d.isDir ? 1 : 0)
+      .attr("fill", (d) => (d.isDir ? dirColor(d.dir, stableDirs) : "transparent"))
+      .attr("fill-opacity", (d) => (d.isDir ? 1 : 0))
       .attr("stroke", (d) => dirColor(d.dir, stableDirs))
-      .attr("stroke-width", (d) => d.isDir ? 1.5 : 2.5)
-      .attr("stroke-dasharray", (d) => d.isDir ? "none" : "5,3");
+      .attr("stroke-width", (d) => (d.isDir ? 1.5 : 2.5))
+      .attr("stroke-dasharray", (d) => (d.isDir ? "none" : "5,3"));
 
-    nodeEl.select("text")
-      .text((d) => d.isDir ? `${d.label}/` : d.label)
+    nodeEl
+      .select("text")
+      .text((d) => (d.isDir ? `${d.label}/` : d.label))
       .attr("text-anchor", "middle")
       .attr("dy", (d) => nodeRadius(d.count) + 11)
-      .attr("font-size", (d) => d.isDir ? 11 : 9)
-      .attr("font-weight", (d) => d.isDir ? "600" : "normal")
-      .attr("fill", (d) => d.isDir ? dirColor(d.dir, stableDirs) : "#8b949e");
+      .attr("font-size", (d) => (d.isDir ? 11 : 9))
+      .attr("font-weight", (d) => (d.isDir ? "600" : "normal"))
+      .attr("fill", (d) => (d.isDir ? dirColor(d.dir, stableDirs) : "#8b949e"));
 
-    nodeEl.select("title").text((d) =>
-      d.isDir
-        ? `${d.id}/\n${d.count} commits\nDouble-click to expand`
-        : `${d.id}\n${d.count} commits\nDouble-click to collapse`,
-    );
+    nodeEl
+      .select("title")
+      .text((d) =>
+        d.isDir
+          ? `${d.id}/\n${d.count} commits\nDouble-click to expand`
+          : `${d.id}\n${d.count} commits\nDouble-click to collapse`,
+      );
 
     // Drag
-    const drag = d3Drag.drag<SVGGElement, Node>()
+    const drag = d3Drag
+      .drag<SVGGElement, Node>()
       .on("start", (event, d) => {
         if (!event.active) sim.alphaTarget(0.3).restart();
-        d.fx = d.x; d.fy = d.y;
+        d.fx = d.x;
+        d.fy = d.y;
       })
-      .on("drag", (event, d) => { d.fx = event.x; d.fy = event.y; })
+      .on("drag", (event, d) => {
+        d.fx = event.x;
+        d.fy = event.y;
+      })
       .on("end", (event, d) => {
         if (!event.active) sim.alphaTarget(0);
-        d.fx = null; d.fy = null;
+        d.fx = null;
+        d.fy = null;
       });
     nodeEl.call(drag);
 
@@ -340,24 +375,32 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     });
 
     // ── Legend ────────────────────────────────────────────────────────────────
-    const legendEl = root.select<SVGGElement>("g.legend")
+    const legendEl = root
+      .select<SVGGElement>("g.legend")
       .selectAll<SVGGElement, string>("g.legend-item")
       .data(stableDirs.slice(0, 12))
       .join((enter) => {
         const ge = enter.append("g").attr("class", "legend-item");
         ge.append("circle").attr("cx", 5).attr("cy", 0).attr("r", 5);
-        ge.append("text").attr("x", 14).attr("dy", "0.35em")
-          .attr("font-size", 10).attr("fill", "#8b949e");
+        ge.append("text")
+          .attr("x", 14)
+          .attr("dy", "0.35em")
+          .attr("font-size", 10)
+          .attr("fill", "#8b949e");
         return ge;
       });
     legendEl.attr("transform", (_, i) => `translate(0,${i * 16})`);
     legendEl.select("circle").attr("fill", (d) => dirColor(d, stableDirs));
     legendEl.select("text").text((d) => d);
-
   }, [nextNodes, nextLinks, handleDblClick, stableDirs]);
 
   // Cleanup on unmount
-  useEffect(() => () => { simRef.current?.stop(); }, []);
+  useEffect(
+    () => () => {
+      simRef.current?.stop();
+    },
+    [],
+  );
 
   if (commits.length === 0)
     return <p style={{ padding: 32, color: "#8b949e" }}>No commits selected.</p>;
@@ -365,15 +408,26 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     return <p style={{ padding: 32, color: "#8b949e" }}>No file data available.</p>;
 
   const btnStyle: React.CSSProperties = {
-    position: "absolute", top: 8, right: 8, zIndex: 10,
+    position: "absolute",
+    top: 8,
+    right: 8,
+    zIndex: 10,
     background: excludeHidden ? "#388bfd" : "#21262d",
-    color: "#f0f6fc", border: "1px solid #30363d", borderRadius: 4,
-    padding: "3px 10px", fontSize: 11, cursor: "pointer",
-    fontFamily: "ui-monospace, 'Cascadia Code', monospace", lineHeight: 1.6,
+    color: "#f0f6fc",
+    border: "1px solid #30363d",
+    borderRadius: 4,
+    padding: "3px 10px",
+    fontSize: 11,
+    cursor: "pointer",
+    fontFamily: "ui-monospace, 'Cascadia Code', monospace",
+    lineHeight: 1.6,
   };
 
   return (
-    <div ref={containerRef} style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative" }}>
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative" }}
+    >
       <button style={btnStyle} onClick={() => setExcludeHidden((v) => !v)}>
         {excludeHidden ? "showing dotfiles" : "hide dotfiles"}
       </button>

@@ -31,10 +31,6 @@ jobs:
         working-directory: ./app
         run: npm install
 
-      - name: Preprocess Git Data
-        working-directory: ./app
-        run: npm run preprocess:git
-
       - name: Build
         working-directory: ./app
         run: npm run build

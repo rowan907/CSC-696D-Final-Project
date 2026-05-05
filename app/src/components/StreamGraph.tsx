@@ -27,7 +27,7 @@ interface StreamData {
   snapshots: Snapshot[];
   labels: string[];
   maxTime: number;
-  mode: "era" | "author";
+  mode: "era" | "author" | "author-commits";
 }
 
 function buildEraStreamData(
@@ -154,6 +154,49 @@ function buildAuthorStreamData(
   return { snapshots, labels: authors, maxTime, mode: "author" };
 }
 
+function buildAuthorCommitStreamData(
+  commits: Commit[],
+  numSamples: number,
+): StreamData | null {
+  const sorted = [...commits].sort((a, b) => +new Date(a.date) - +new Date(b.date));
+
+  if (sorted.length < 2) return null;
+
+  const minTime = +new Date(sorted[0].date);
+  const maxTime = +new Date(sorted[sorted.length - 1].date);
+  if (maxTime === minTime) return null;
+
+  // Rank authors by total commit count, keep top MAX_AUTHORS
+  const authorTotals = new Map<string, number>();
+  for (const c of sorted) {
+    authorTotals.set(c.author, (authorTotals.get(c.author) ?? 0) + 1);
+  }
+  const authors = Array.from(authorTotals.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, MAX_AUTHORS)
+    .map(([name]) => name);
+
+  if (authors.length === 0) return null;
+
+  const authorIndex = new Map(authors.map((a, i) => [a, i]));
+  const numAuthors = authors.length;
+  const sampleMs = (maxTime - minTime) / (numSamples - 1);
+  const authorCommits = new Array(numAuthors).fill(0);
+  const snapshots: Snapshot[] = [];
+
+  let commitIdx = 0;
+  for (let s = 0; s < numSamples; s++) {
+    const t = s === numSamples - 1 ? maxTime : minTime + s * sampleMs;
+    while (commitIdx < sorted.length && +new Date(sorted[commitIdx].date) <= t) {
+      const ai = authorIndex.get(sorted[commitIdx++].author);
+      if (ai !== undefined) authorCommits[ai]++;
+    }
+    snapshots.push({ date: new Date(t), values: [...authorCommits] });
+  }
+
+  return { snapshots, labels: authors, maxTime, mode: "author-commits" };
+}
+
 function cohortColor(i: number, total: number): string {
   const t = i / Math.max(total - 1, 1);
   const hue = Math.round(230 - t * 210);
@@ -170,17 +213,22 @@ export default function StreamGraph({ commits }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const modeRef = useRef<"era" | "author" | "author-commits">("era");
+  const labelsRef = useRef<string[]>([]);
   const [excludedCohorts, setExcludedCohorts] = useState<Set<number>>(new Set());
-  const [groupBy, setGroupBy] = useState<"era" | "author">("era");
+  const [groupBy, setGroupBy] = useState<"era" | "author" | "author-commits">("era");
 
   const streamData = useMemo(() => {
     if (groupBy === "era") return buildEraStreamData(commits, NUM_COHORTS, NUM_SAMPLES);
+    if (groupBy === "author-commits") return buildAuthorCommitStreamData(commits, NUM_SAMPLES);
     return buildAuthorStreamData(commits, NUM_SAMPLES);
   }, [commits, groupBy]);
 
   // Reset on mode switch or repo change (commits is a new reference per repo)
   useEffect(() => {
     setExcludedCohorts(new Set());
+    // Clear persistent SVG groups so the next draw starts fresh
+    if (svgRef.current) select(svgRef.current).selectAll("g.sg-paths,g.sg-decor,g.sg-legend,g.sg-linepanel").remove();
   }, [groupBy, commits]);
 
   useEffect(() => {
@@ -247,26 +295,50 @@ export default function StreamGraph({ commits }: Props) {
         .y1((d) => yScale(d[1]))
         .curve(curveBasis);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (select(svg!).selectAll("*") as any).interrupt().remove();
-      const root = select(svg!).attr("width", W).attr("height", H);
-      const g = root.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+      // Update refs so event handlers always read the current mode/labels (fix 5)
+      modeRef.current = mode;
+      labelsRef.current = labels;
 
-      // ── Stream paths ────────────────────────────────────────────────────
+      const root = select(svg!).attr("width", W).attr("height", H);
+
+      // Initialize named groups once — avoids full SVG teardown on every draw (fix 2)
+      if (root.select("g.sg-paths").empty()) {
+        root.append("g").attr("class", "sg-paths");
+        root.append("g").attr("class", "sg-decor");
+        root.append("g").attr("class", "sg-legend");
+        root.append("g").attr("class", "sg-linepanel");
+      }
+
+      const g = root.select<SVGGElement>("g.sg-paths")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Clear non-path decorations; paths are handled by D3 join below
+      root.select("g.sg-decor").selectAll("*").remove();
+      root.select("g.sg-legend").selectAll("*").remove();
+      root.select("g.sg-linepanel").selectAll("*").remove();
+
+      const decorG = root.select<SVGGElement>("g.sg-decor")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // ── Stream paths — joined so transitions animate from previous state ─
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const paths: any = g.selectAll<SVGPathElement, any>("path.stream")
-        .data(series)
-        .join("path")
-        .attr("class", "stream")
+        .data(series, (d: any) => d.key as number)
+        .join(
+          (enter) => enter.append("path").attr("class", "stream").attr("fill-opacity", 0),
+          (update) => update,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (exit) => (exit as any).transition().duration(300).attr("fill-opacity", 0).remove(),
+        )
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .attr("fill", (d: any) => cohortColor(d.key as number, numGroups))
-        .attr("fill-opacity", 0)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .attr("d", (d: any) => areaGen(d))
-        .style("cursor", "pointer")
-        .on("mouseenter", function () {
+        .style("cursor", "pointer");
+
+      paths
+        .on("mouseenter", function (this: SVGPathElement) {
           paths.interrupt().attr("fill-opacity", 0.3);
-          // eslint-disable-next-line @typescript-eslint/no-invalid-this
           select(this).attr("fill-opacity", 1);
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -283,17 +355,19 @@ export default function StreamGraph({ commits }: Props) {
           );
           const groupIdx = d.key as number;
           const netLines = snapshots[closestIdx].values[groupIdx];
-          const label = labels[groupIdx];
+          const label = labelsRef.current[groupIdx];
 
           tooltip!.style.display = "block";
           tooltip!.style.left = `${mx + 14}px`;
           tooltip!.style.top = `${my - 16}px`;
           tooltip!.innerHTML = [
             `<div style="color:${cohortColor(groupIdx, numGroups)};font-weight:600;margin-bottom:2px">${label}</div>`,
-            mode === "era"
+            modeRef.current === "era"
               ? `<div style="color:#6e7681;font-size:9px;margin-bottom:2px">Era ${groupIdx + 1} of ${numGroups}</div>`
               : "",
-            `<div>${netLines.toLocaleString()} net LOC</div>`,
+            modeRef.current === "author-commits"
+              ? `<div>${netLines.toLocaleString()} commits</div>`
+              : `<div>${netLines.toLocaleString()} net LOC</div>`,
             `<div style="margin-top:6px;color:#6e7681;font-size:10px">click to extract</div>`,
           ].join("");
         })
@@ -312,10 +386,10 @@ export default function StreamGraph({ commits }: Props) {
           });
         });
 
-      paths.transition().duration(500).attr("fill-opacity", 0.88);
+      paths.interrupt().transition().duration(500).attr("fill-opacity", 0.88);
 
-      // Center axis line
-      g.append("line")
+      // ── Decorations (axis, labels) ───────────────────────────────────────
+      decorG.append("line")
         .attr("x1", 0)
         .attr("x2", innerW)
         .attr("y1", yScale(0))
@@ -325,7 +399,7 @@ export default function StreamGraph({ commits }: Props) {
         .attr("stroke-dasharray", "4,3");
 
       if (!hasLinePanel) {
-        g.append("g")
+        decorG.append("g")
           .attr("transform", `translate(0,${streamInnerH})`)
           .call(axisBottom(xScale).ticks(6).tickSize(-streamInnerH))
           .call((ax) => {
@@ -356,7 +430,7 @@ export default function StreamGraph({ commits }: Props) {
           const d = s[maxIdx];
           const peakLoc = snapshots[maxIdx].values[groupIdx];
           const locLabel = peakLoc >= 1000 ? `${(peakLoc / 1000).toFixed(1)}k` : `${peakLoc}`;
-          g.append("text")
+          decorG.append("text")
             .attr("x", xScale(snapshots[maxIdx].date))
             .attr("y", yScale((d[0] + d[1]) / 2))
             .attr("text-anchor", "middle")
@@ -368,8 +442,7 @@ export default function StreamGraph({ commits }: Props) {
         });
 
       // ── Legend ──────────────────────────────────────────────────────────
-      const legendG = root
-        .append("g")
+      const legendG = root.select<SVGGElement>("g.sg-legend")
         .attr("transform", `translate(${margin.left + innerW + 16}, ${margin.top})`);
 
       legendG
@@ -378,7 +451,13 @@ export default function StreamGraph({ commits }: Props) {
         .attr("font-size", 9)
         .attr("letter-spacing", "0.06em")
         .attr("dy", "-0.4em")
-        .text(mode === "era" ? "ERA (OLDEST → NEWEST)" : "AUTHOR (MOST → FEWEST LOC)");
+        .text(
+          mode === "era"
+            ? "ERA (OLDEST → NEWEST)"
+            : mode === "author-commits"
+              ? "AUTHOR (MOST → FEWEST COMMITS)"
+              : "AUTHOR (MOST → FEWEST LOC)",
+        );
 
       const step = numGroups > 20 ? 2 : 1;
       const allLegendItems = labels
@@ -412,7 +491,7 @@ export default function StreamGraph({ commits }: Props) {
           .attr("stroke-width", 1);
 
         const displayLabel =
-          mode === "author" && label.length > 14 ? label.slice(0, 13) + "…" : label;
+          mode !== "era" && label.length > 14 ? label.slice(0, 13) + "…" : label;
         row
           .append("text")
           .attr("x", 14)
@@ -423,35 +502,36 @@ export default function StreamGraph({ commits }: Props) {
       });
 
       if (!hasLinePanel) {
-        root
+        decorG
           .append("text")
-          .attr("x", margin.left + innerW / 2)
-          .attr("y", H - 4)
+          .attr("x", innerW / 2)
+          .attr("y", streamInnerH + margin.bottom - 4)
           .attr("text-anchor", "middle")
           .attr("fill", "#3d444d")
           .attr("font-size", 9)
           .text(
             mode === "era"
               ? "band width = net lines of code · each file is charged to the era that introduced it"
-              : "band width = net lines of code · each file is charged to the author who introduced it",
+              : mode === "author-commits"
+                ? "band width = cumulative commits · each commit charged to its author"
+                : "band width = net lines of code · each file is charged to the author who introduced it",
           );
       }
 
       // ── Line panel ──────────────────────────────────────────────────────
       if (!hasLinePanel) return;
 
-      root
-        .append("line")
-        .attr("x1", 0)
-        .attr("x2", W)
-        .attr("y1", splitY)
-        .attr("y2", splitY)
+      const lineG = root.select<SVGGElement>("g.sg-linepanel")
+        .attr("transform", `translate(${margin.left},${linePanelY})`);
+
+      // Divider
+      root.select("g.sg-linepanel").append("line")
+        .attr("x1", -margin.left)
+        .attr("x2", W - margin.left)
+        .attr("y1", splitY - linePanelY)
+        .attr("y2", splitY - linePanelY)
         .attr("stroke", "#30363d")
         .attr("stroke-width", 1);
-
-      const lineG = root
-        .append("g")
-        .attr("transform", `translate(${margin.left},${linePanelY})`);
 
       lineG
         .append("rect")
@@ -532,10 +612,12 @@ export default function StreamGraph({ commits }: Props) {
               tooltip!.style.top = `${my - 16}px`;
               tooltip!.innerHTML = [
                 `<div style="color:${color};font-weight:600;margin-bottom:2px">${label}</div>`,
-                mode === "era"
+                modeRef.current === "era"
                   ? `<div style="color:#6e7681;font-size:9px;margin-bottom:2px">Era ${groupIdx + 1} of ${numGroups}</div>`
                   : "",
-                `<div>${netLines.toLocaleString()} net LOC</div>`,
+                modeRef.current === "author-commits"
+                  ? `<div>${netLines.toLocaleString()} commits</div>`
+                  : `<div>${netLines.toLocaleString()} net LOC</div>`,
                 `<div style="margin-top:6px;color:#6e7681;font-size:10px">click to restore</div>`,
               ].join("");
             })
@@ -555,7 +637,7 @@ export default function StreamGraph({ commits }: Props) {
 
           const lastVal = snapshots[snapshots.length - 1].values[groupIdx];
           const shortLabel =
-            mode === "era" ? `C${groupIdx + 1}` : label.split(/[\s<@]/)[0].slice(0, 10);
+            modeRef.current === "era" ? `C${groupIdx + 1}` : label.split(/[\s<@]/)[0].slice(0, 10);
           const valStr = lastVal >= 1000 ? `${(lastVal / 1000).toFixed(1)}k` : `${lastVal}`;
           lineG
             .append("text")
@@ -618,7 +700,13 @@ export default function StreamGraph({ commits }: Props) {
           style={groupBy === "author" ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" } : btnBase}
           onClick={() => setGroupBy("author")}
         >
-          By Author
+          By Author (LOC)
+        </button>
+        <button
+          style={groupBy === "author-commits" ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" } : btnBase}
+          onClick={() => setGroupBy("author-commits")}
+        >
+          By Author (Commits)
         </button>
       </div>
       <svg ref={svgRef} style={{ width: "100%", height: "100%" }} />

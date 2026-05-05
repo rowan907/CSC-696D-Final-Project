@@ -77,11 +77,6 @@ function normalizeFilePath(path: string): string {
   return path;
 }
 
-function dirColor(dir: string, dirs: string[]): string {
-  const idx = dirs.indexOf(dir);
-  return DIR_COLORS[idx % DIR_COLORS.length] ?? "#8b949e";
-}
-
 function isHidden(path: string): boolean {
   return path.split("/").some((part) => part.startsWith("."));
 }
@@ -226,6 +221,14 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     return [...dirs].sort();
   }, [allCommits]);
 
+  const dirColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    stableDirs.forEach((dir, i) => {
+      map.set(dir, DIR_COLORS[i % DIR_COLORS.length] ?? "#8b949e");
+    });
+    return map;
+  }, [stableDirs]);
+
   const handleDblClick = useCallback((id: string, isDir: boolean) => {
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -286,8 +289,9 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
 
     // ── Sync stable node objects ─────────────────────────────────────────────
     // Remove stale nodes
-    for (const id of [...nodeMap.keys()]) {
-      if (!nextNodes.find((n) => n.id === id)) nodeMap.delete(id);
+    const nextNodeIds = new Set(nextNodes.map((n) => n.id));
+    for (const id of nodeMap.keys()) {
+      if (!nextNodeIds.has(id)) nodeMap.delete(id);
     }
     // Add new / update existing
     for (const n of nextNodes) {
@@ -373,9 +377,9 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     nodeEl
       .select("circle")
       .attr("r", (d) => nodeRadius(d.linesOfCode))
-      .attr("fill", (d) => (d.isDir ? dirColor(d.dir, stableDirs) : "transparent"))
+      .attr("fill", (d) => (d.isDir ? (dirColorMap.get(d.dir) ?? "#8b949e") : "transparent"))
       .attr("fill-opacity", (d) => (d.isDir ? 1 : 0))
-      .attr("stroke", (d) => dirColor(d.dir, stableDirs))
+      .attr("stroke", (d) => dirColorMap.get(d.dir) ?? "#8b949e")
       .attr("stroke-width", (d) => (d.isDir ? 1.5 : 2.5))
       .attr("stroke-dasharray", (d) => (d.isDir ? "none" : "5,3"));
 
@@ -386,7 +390,7 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       .attr("dy", (d) => nodeRadius(d.linesOfCode) + 11)
       .attr("font-size", (d) => (d.isDir ? 11 : 9))
       .attr("font-weight", (d) => (d.isDir ? "600" : "normal"))
-      .attr("fill", (d) => (d.isDir ? dirColor(d.dir, stableDirs) : "#8b949e"));
+      .attr("fill", (d) => (d.isDir ? (dirColorMap.get(d.dir) ?? "#8b949e") : "#8b949e"));
 
     nodeEl
       .select("title")
@@ -421,7 +425,7 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     });
 
     // ── Tick ─────────────────────────────────────────────────────────────────
-    sim.on("tick", () => {
+    sim.on("tick.render", () => {
       linkEl
         .attr("x1", (d) => (d.source as Node).x!)
         .attr("y1", (d) => (d.source as Node).y!)
@@ -446,9 +450,21 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
         return ge;
       });
     legendEl.attr("transform", (_, i) => `translate(0,${i * 16})`);
-    legendEl.select("circle").attr("fill", (d) => dirColor(d, stableDirs));
+    legendEl.select("circle").attr("fill", (d) => dirColorMap.get(d) ?? "#8b949e");
     legendEl.select("text").text((d) => d);
-  }, [nextNodes, nextLinks, handleDblClick, stableDirs]);
+
+    // Overflow indicator
+    root.select("g.legend").select("text.legend-overflow").remove();
+    if (stableDirs.length > 12) {
+      root.select<SVGGElement>("g.legend")
+        .append("text")
+        .attr("class", "legend-overflow")
+        .attr("transform", `translate(0,${12 * 16})`)
+        .attr("font-size", 9)
+        .attr("fill", "#6e7681")
+        .text(`+${stableDirs.length - 12} more…`);
+    }
+  }, [nextNodes, nextLinks, handleDblClick, stableDirs, dirColorMap]);
 
   // Cleanup on unmount
   useEffect(

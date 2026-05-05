@@ -171,19 +171,41 @@ interface PlacedWord {
   color: string;
 }
 
-function buildWords(commits: Commit[]): WordEntry[] {
-  const tokens: string[] = [];
-  for (const c of commits) {
-    words(c.subject.toLowerCase()).forEach((w) => {
-      if (w.length > 2 && !STOP_WORDS.has(w) && !/^\d+$/.test(w)) tokens.push(w);
-    });
+function tokenize(subject: string): string[] {
+  return words(subject.toLowerCase()).filter(
+    (w) => w.length > 2 && !STOP_WORDS.has(w) && !/^\d+$/.test(w),
+  );
+}
+
+function buildCorpusIDF(allCommits: Commit[]): Map<string, number> {
+  const N = allCommits.length;
+  const df = new Map<string, number>();
+  for (const c of allCommits) {
+    for (const w of new Set(tokenize(c.subject))) {
+      df.set(w, (df.get(w) ?? 0) + 1);
+    }
   }
+  const idf = new Map<string, number>();
+  for (const [word, count] of df) {
+    idf.set(word, Math.log(N / (1 + count)));
+  }
+  return idf;
+}
+
+function buildWords(commits: Commit[], allCommits: Commit[]): WordEntry[] {
+  const tokens: string[] = [];
+  for (const c of commits) tokenize(c.subject).forEach((w) => tokens.push(w));
   const counts = countBy(tokens);
+
+  const idf = buildCorpusIDF(allCommits);
+
   return orderBy(
-    Object.entries(counts).map(([text, value]) => ({ text, value })),
+    Object.entries(counts)
+      .map(([text, count]) => ({ text, value: count * (idf.get(text) ?? 0) }))
+      .filter((d) => d.value > 0),
     "value",
     "desc",
-  ).slice(0, 100);
+  ).slice(0, 50);
 }
 
 const Outer = styled.div`
@@ -204,14 +226,15 @@ const Empty = styled.div`
 
 interface Props {
   commits: Commit[];
+  allCommits: Commit[];
 }
 
-export default function WordCloud({ commits }: Props) {
+export default function WordCloud({ commits, allCommits }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<[number, number] | null>(null);
   const [placed, setPlaced] = useState<PlacedWord[]>([]);
 
-  const wordData = useMemo(() => buildWords(commits), [commits]);
+  const wordData = useMemo(() => buildWords(commits, allCommits), [commits, allCommits]);
 
   // Track container size
   useEffect(() => {

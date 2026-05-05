@@ -441,7 +441,7 @@ export default function App() {
                     : ""}
             </PaneLabel>
             <PaneContent>
-              {activeViz === "wordcloud" && <WordCloud commits={cloudCommits} />}
+              {activeViz === "wordcloud" && <WordCloud commits={cloudCommits} allCommits={data ?? []} />}
               {activeViz === "clustermap" && (
                 <FileClusterMap
                   commits={clusterCommits}

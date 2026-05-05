@@ -328,6 +328,7 @@ export default function App() {
   const { data, isLoading, isError, error } = useQuery<Commit[]>({
     queryKey: ["commits", activeRepo],
     queryFn: () => fetchCommits(activeRepo),
+    gcTime: 0, // discard previous repo's data from cache immediately on switch
   });
 
   const repoConfig = find(REPOS, { key: activeRepo })!;
@@ -448,7 +449,7 @@ export default function App() {
                   repoKey={activeRepo}
                 />
               )}
-              {activeViz === "streamgraph" && <StreamGraph commits={data ?? []} />}
+              {activeViz === "streamgraph" && data && <StreamGraph key={activeRepo} commits={data} />}
               {activeViz === "test" && <TestViz />}
             </PaneContent>
           </Pane>

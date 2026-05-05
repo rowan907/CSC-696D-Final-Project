@@ -142,9 +142,36 @@ const BranchFilter = styled.span<{ $color: string }>`
   border: 1px solid ${({ $color }) => $color};
   color: ${({ $color }) => $color};
   cursor: pointer;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   &:hover {
     opacity: 0.75;
   }
+`;
+
+const AuthorBar = styled.div`
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #6e7681;
+  border-bottom: 1px solid #161b22;
+  background: #0d1117;
+`;
+
+const AuthorSelect = styled.select`
+  background: #21262d;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  cursor: pointer;
+  max-width: 220px;
 `;
 
 // ── Lane assignment ──────────────────────────────────────────────────────────
@@ -336,7 +363,13 @@ export default function CommitGraph({
   const [tooltip, setTooltip] = useState<{ x: number; y: number; c: PlacedCommit } | null>(null);
   const [selection, setSelection] = useState<SelectionRange | null>(null);
   const [activeBranch, setActiveBranch] = useState<{ name: string; color: string } | null>(null);
+  const [activeAuthor, setActiveAuthor] = useState<string | null>(null);
   const dragStart = useRef<number | null>(null);
+
+  const authors = useMemo(() => {
+    const set = new Set(placed.map((c) => c.author));
+    return [...set].sort();
+  }, [placed]);
   const dragMoved = useRef(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -405,11 +438,36 @@ export default function CommitGraph({
 
   return (
     <div>
+      <AuthorBar>
+        <span>Author:</span>
+        <AuthorSelect
+          value={activeAuthor ?? ""}
+          onChange={(e) => {
+            const author = e.target.value || null;
+            setActiveAuthor(author);
+            setActiveBranch(null);
+            setSelection(null);
+            if (author) {
+              onSelectionChange?.(placed.filter((c) => c.author === author));
+            } else {
+              onSelectionChange?.(placed);
+            }
+          }}
+        >
+          <option value="">All authors</option>
+          {authors.map((a) => (
+            <option key={a} value={a}>
+              {a}
+            </option>
+          ))}
+        </AuthorSelect>
+      </AuthorBar>
       <SelectionHint>
         <span>
           Drag to select a range · {placed.length} commits
           {selection &&
             !activeBranch &&
+            !activeAuthor &&
             ` · ${Math.abs(selection.endRow - selection.startRow) + 1} selected`}
         </span>
         {activeBranch && (
@@ -423,6 +481,19 @@ export default function CommitGraph({
             }}
           >
             {activeBranch.name} ✕
+          </BranchFilter>
+        )}
+        {activeAuthor && (
+          <BranchFilter
+            $color="#58a6ff"
+            title={`Click to clear author filter: ${activeAuthor}`}
+            onClick={() => {
+              setActiveAuthor(null);
+              setSelection(null);
+              onSelectionChange?.(placed);
+            }}
+          >
+            {activeAuthor.length > 22 ? `${activeAuthor.slice(0, 22)}…` : activeAuthor} ✕
           </BranchFilter>
         )}
       </SelectionHint>
@@ -515,7 +586,9 @@ export default function CommitGraph({
               }),
             )}
             {placed.map((c) => {
-              const isBranchMatch = !activeBranch || c.branch === activeBranch.name;
+              const isBranchMatch =
+                (!activeBranch || c.branch === activeBranch.name) &&
+                (!activeAuthor || c.author === activeAuthor);
               return (
                 <circle
                   key={c.hash}
@@ -542,6 +615,7 @@ export default function CommitGraph({
                     } else {
                       const branchCommits = placed.filter((p) => p.branch === branch);
                       setActiveBranch({ name: branch, color: c.color });
+                      setActiveAuthor(null);
                       setSelection(null);
                       onSelectionChange?.(branchCommits);
                     }
@@ -552,7 +626,9 @@ export default function CommitGraph({
           </GraphSvg>
           <TextColumn>
             {placed.map((c) => {
-              const dimRow = activeBranch ? c.branch !== activeBranch.name : false;
+              const dimRow =
+                (activeBranch ? c.branch !== activeBranch.name : false) ||
+                (activeAuthor ? c.author !== activeAuthor : false);
               // Pull text left by the number of unused lanes
               const unusedLanes = maxLanes - c.currentMaxLane;
               const pullLeft = unusedLanes * LANE_W;

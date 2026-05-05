@@ -33,13 +33,25 @@ function runGit(gitDir, command) {
   }).trim();
 }
 
+function normalizeRenamePath(path) {
+  // Full rename: "old/file.py => new/file.py" — keep only the new path
+  if (!path.includes("{") && path.includes(" => ")) {
+    return path.split(" => ").pop().trim();
+  }
+  // Brace notation: "{old_dir => new_dir}/file.py" or "dir/{old.py => new.py}"
+  if (path.includes("{") && path.includes(" => ")) {
+    return path.replace(/\{[^}]* => ([^}]*)\}/g, "$1").replace(/\/+/g, "/");
+  }
+  return path;
+}
+
 function parseNumstat(numstatOutput) {
   const files = [];
   for (const line of numstatOutput.split("\n").filter(Boolean)) {
     const [add, del, ...pathParts] = line.split("\t");
     if (!del || !pathParts.length) continue;
     files.push({
-      path: pathParts.join("\t"), // Handle paths with tabs
+      path: normalizeRenamePath(pathParts.join("\t")),
       additions: add === "-" ? 0 : parseInt(add, 10),
       deletions: del === "-" ? 0 : parseInt(del, 10),
     });

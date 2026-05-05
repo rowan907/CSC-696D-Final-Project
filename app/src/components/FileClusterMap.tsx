@@ -17,6 +17,7 @@ interface Node extends d3Force.SimulationNodeDatum {
   label: string;
   isDir: boolean;
   count: number;
+  linesOfCode: number;
   dir: string;
 }
 
@@ -64,6 +65,18 @@ function topDir(path: string): string {
   return parts.length > 1 ? parts[0] : "(root)";
 }
 
+function normalizeFilePath(path: string): string {
+  // Full rename: "old/file.py => new/file.py" — keep only the new path
+  if (!path.includes("{") && path.includes(" => ")) {
+    return path.split(" => ").pop()!.trim();
+  }
+  // Brace notation: "{old_dir => new_dir}/file.py" or "dir/{old.py => new.py}"
+  if (path.includes("{") && path.includes(" => ")) {
+    return path.replace(/\{[^}]* => ([^}]*)\}/g, "$1").replace(/\/+/g, "/");
+  }
+  return path;
+}
+
 function dirColor(dir: string, dirs: string[]): string {
   const idx = dirs.indexOf(dir);
   return DIR_COLORS[idx % DIR_COLORS.length] ?? "#8b949e";
@@ -77,28 +90,61 @@ function buildGraph(
   commits: Commit[],
   expanded: Set<string>,
   excludeHidden: boolean,
-): { nodes: Node[]; links: Link[] } {
+  maxChildNodes: number,
+): { nodes: Node[]; links: Link[]; maxExpandedDirFiles: number } {
+  // Pass 1: accumulate per-file LoC so we can rank files within each expanded directory
+  const fileLoC = new Map<string, number>();
+  for (const commit of commits) {
+    if (!commit.files) continue;
+    for (const f of commit.files) {
+      const p = normalizeFilePath(f.path);
+      if (excludeHidden && isHidden(p)) continue;
+      fileLoC.set(p, (fileLoC.get(p) ?? 0) + f.additions + f.deletions);
+    }
+  }
+
+  // For each expanded directory: rank its files by LoC, keep top maxChildNodes
+  const allowedFiles = new Set<string>();
+  let maxExpandedDirFiles = 0;
+  for (const dir of expanded) {
+    const filesInDir = [...fileLoC.entries()]
+      .filter(([p]) => topDir(p) === dir)
+      .sort((a, b) => b[1] - a[1]);
+    maxExpandedDirFiles = Math.max(maxExpandedDirFiles, filesInDir.length);
+    filesInDir.slice(0, maxChildNodes).forEach(([p]) => allowedFiles.add(p));
+  }
+
+  // Pass 2: build graph — files outside allowedFiles are collapsed back to their directory
   const nodeCount = new Map<string, number>();
+  const locSum = new Map<string, number>();
   const coCount = new Map<string, number>();
   const fileNodeKeys = new Set<string>();
 
+  const pathToKey = (p: string): string | null => {
+    const dir = topDir(p);
+    if (expanded.has(dir)) {
+      if (!allowedFiles.has(p)) return null; // beyond the per-dir cap
+      fileNodeKeys.add(p);
+      return p;
+    }
+    return dir;
+  };
+
   for (const commit of commits) {
     if (!commit.files || commit.files.length === 0) continue;
-    const paths = [
-      ...new Set(commit.files.map((f) => f.path).filter((p) => !excludeHidden || !isHidden(p))),
-    ];
+    const validFiles = commit.files
+      .map((f) => ({ ...f, path: normalizeFilePath(f.path) }))
+      .filter((f) => !excludeHidden || !isHidden(f.path));
 
+    for (const f of validFiles) {
+      const key = pathToKey(f.path);
+      if (key === null) continue;
+      locSum.set(key, (locSum.get(key) ?? 0) + f.additions + f.deletions);
+    }
+
+    const paths = [...new Set(validFiles.map((f) => f.path))];
     const nodeKeys = [
-      ...new Set(
-        paths.map((p) => {
-          const dir = topDir(p);
-          if (expanded.has(dir)) {
-            fileNodeKeys.add(p);
-            return p;
-          }
-          return dir;
-        }),
-      ),
+      ...new Set(paths.map(pathToKey).filter((k): k is string => k !== null)),
     ];
 
     for (const key of nodeKeys) {
@@ -120,7 +166,14 @@ function buildGraph(
   const nodes: Node[] = [...nodeCount.entries()].map(([id, count]) => {
     const isDir = !fileNodeKeys.has(id);
     const dir = fileNodeKeys.has(id) ? (id.includes("/") ? id.split("/")[0] : "(root)") : id;
-    return { id, label: isDir ? id : (id.split("/").pop() ?? id), isDir, count, dir };
+    return {
+      id,
+      label: isDir ? id : (id.split("/").pop() ?? id),
+      isDir,
+      count,
+      linesOfCode: locSum.get(id) ?? 0,
+      dir,
+    };
   });
 
   const nodeSet = new Set(nodes.map((n) => n.id));
@@ -131,7 +184,7 @@ function buildGraph(
     if (nodeSet.has(a) && nodeSet.has(b)) links.push({ source: a, target: b, weight });
   }
 
-  return { nodes, links };
+  return { nodes, links, maxExpandedDirFiles };
 }
 
 export default function FileClusterMap({ commits, allCommits, repoKey }: Props) {
@@ -144,10 +197,12 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [excludeHidden, setExcludeHidden] = useState(false);
+  const [maxNodes, setMaxNodes] = useState(20);
 
   // Reset on repo change
   useEffect(() => {
     setExpanded(new Set());
+    setMaxNodes(20);
     nodeMapRef.current.clear();
     simRef.current?.stop();
     simRef.current = null;
@@ -156,9 +211,9 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     if (svgRef.current) select(svgRef.current).selectAll("*").remove();
   }, [repoKey]);
 
-  const { nodes: nextNodes, links: nextLinks } = useMemo(
-    () => buildGraph(commits, expanded, excludeHidden),
-    [commits, expanded, excludeHidden],
+  const { nodes: nextNodes, links: nextLinks, maxExpandedDirFiles } = useMemo(
+    () => buildGraph(commits, expanded, excludeHidden, maxNodes),
+    [commits, expanded, excludeHidden, maxNodes],
   );
 
   // Stable dir list derived from the full dataset — keeps colors consistent across timeline brushes
@@ -241,6 +296,7 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
         existing.label = n.label;
         existing.isDir = n.isDir;
         existing.count = n.count;
+        existing.linesOfCode = n.linesOfCode;
         existing.dir = n.dir;
       } else {
         // Initialize new nodes at their parent dir's position (smooth expansion)
@@ -265,9 +321,9 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       .filter((l) => l.source && l.target);
 
     // ── Scales ───────────────────────────────────────────────────────────────
-    const maxCount = Math.max(...simNodes.map((n) => n.count), 1);
+    const maxLoc = Math.max(...simNodes.map((n) => n.linesOfCode), 1);
     const maxWeight = Math.max(...simLinks.map((l) => l.weight), 1);
-    const nodeRadius = scaleSqrt().domain([1, maxCount]).range([8, 24]);
+    const nodeRadius = scaleSqrt().domain([0, maxLoc]).range([5, 28]);
     const linkWidth = scaleLinear().domain([1, maxWeight]).range([0.5, 4]);
     const linkStrength = scaleLinear().domain([1, maxWeight]).range([0.02, 0.5]);
 
@@ -284,7 +340,7 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       )
       .force(
         "collision",
-        d3Force.forceCollide<Node>().radius((d) => nodeRadius(d.count) + 5),
+        d3Force.forceCollide<Node>().radius((d) => nodeRadius(d.linesOfCode) + 5),
       )
       .alpha(0.3)
       .restart();
@@ -316,7 +372,7 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
 
     nodeEl
       .select("circle")
-      .attr("r", (d) => nodeRadius(d.count))
+      .attr("r", (d) => nodeRadius(d.linesOfCode))
       .attr("fill", (d) => (d.isDir ? dirColor(d.dir, stableDirs) : "transparent"))
       .attr("fill-opacity", (d) => (d.isDir ? 1 : 0))
       .attr("stroke", (d) => dirColor(d.dir, stableDirs))
@@ -327,7 +383,7 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       .select("text")
       .text((d) => (d.isDir ? `${d.label}/` : d.label))
       .attr("text-anchor", "middle")
-      .attr("dy", (d) => nodeRadius(d.count) + 11)
+      .attr("dy", (d) => nodeRadius(d.linesOfCode) + 11)
       .attr("font-size", (d) => (d.isDir ? 11 : 9))
       .attr("font-weight", (d) => (d.isDir ? "600" : "normal"))
       .attr("fill", (d) => (d.isDir ? dirColor(d.dir, stableDirs) : "#8b949e"));
@@ -336,8 +392,8 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       .select("title")
       .text((d) =>
         d.isDir
-          ? `${d.id}/\n${d.count} commits\nDouble-click to expand`
-          : `${d.id}\n${d.count} commits\nDouble-click to collapse`,
+          ? `${d.id}/\n${d.count} commits · ${d.linesOfCode.toLocaleString()} lines\nDouble-click to expand`
+          : `${d.id}\n${d.count} commits · ${d.linesOfCode.toLocaleString()} lines\nDouble-click to collapse`,
       );
 
     // Drag
@@ -407,11 +463,24 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
   if (!commits.some((c) => c.files && c.files.length > 0))
     return <p style={{ padding: 32, color: "#8b949e" }}>No file data available.</p>;
 
-  const btnStyle: React.CSSProperties = {
+  const sliderMax = Math.max(maxExpandedDirFiles, 1);
+  const noExpanded = maxExpandedDirFiles === 0;
+
+  const controlsStyle: React.CSSProperties = {
     position: "absolute",
     top: 8,
     right: 8,
     zIndex: 10,
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    background: "rgba(13,17,23,0.88)",
+    border: "1px solid #30363d",
+    borderRadius: 6,
+    padding: "4px 10px",
+  };
+
+  const btnStyle: React.CSSProperties = {
     background: excludeHidden ? "#388bfd" : "#21262d",
     color: "#f0f6fc",
     border: "1px solid #30363d",
@@ -428,9 +497,34 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
       ref={containerRef}
       style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative" }}
     >
-      <button style={btnStyle} onClick={() => setExcludeHidden((v) => !v)}>
-        {excludeHidden ? "showing dotfiles" : "hide dotfiles"}
-      </button>
+      <div style={controlsStyle}>
+        <button style={btnStyle} onClick={() => setExcludeHidden((v) => !v)}>
+          {excludeHidden ? "showing dotfiles" : "hide dotfiles"}
+        </button>
+        <label
+          style={{
+            fontSize: 11,
+            color: "#8b949e",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <span style={{ color: noExpanded ? "#3d444d" : "#8b949e" }}>files/dir:</span>
+          <input
+            type="range"
+            min={1}
+            max={sliderMax}
+            value={Math.min(maxNodes, sliderMax)}
+            onChange={(e) => setMaxNodes(Number(e.target.value))}
+            style={{ width: 80, accentColor: "#388bfd", opacity: noExpanded ? 0.3 : 1 }}
+            disabled={noExpanded}
+          />
+          <span style={{ color: noExpanded ? "#3d444d" : "#f0f6fc", minWidth: 36, fontVariantNumeric: "tabular-nums" }}>
+            {noExpanded ? "—" : `${Math.min(maxNodes, sliderMax)}/${sliderMax}`}
+          </span>
+        </label>
+      </div>
       <svg ref={svgRef} style={{ width: "100%", height: "100%" }} />
     </div>
   );

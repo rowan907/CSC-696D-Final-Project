@@ -7,7 +7,6 @@ import WordCloud from "./components/WordCloud";
 import FileClusterMap from "./components/FileClusterMap";
 import CommitTimeline from "./components/CommitTimeline";
 import StreamGraph from "./components/StreamGraph";
-import TestViz from "./components/TestViz";
 import type { Commit, CommitFile } from "./types/git";
 
 const GlobalStyle = createGlobalStyle`
@@ -68,11 +67,6 @@ const VIZS = [
     label: "Sediment Graph",
     description:
       "Stream graph showing how much code from each era survives over time. Each band is a cohort (1/64th of the repo's history). Band width = net lines of code. Each file is charged to the cohort that introduced it — edits and deletions reduce that cohort. Cool colors = old code, warm colors = new code.",
-  },
-  {
-    key: "test",
-    label: "Test",
-    description: "A placeholder for a future visualization.",
   },
 ];
 
@@ -450,7 +444,6 @@ export default function App() {
                 />
               )}
               {activeViz === "streamgraph" && data && <StreamGraph key={activeRepo} commits={data} />}
-              {activeViz === "test" && <TestViz />}
             </PaneContent>
           </Pane>
         </Body>

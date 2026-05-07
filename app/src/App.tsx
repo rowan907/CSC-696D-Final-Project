@@ -435,7 +435,9 @@ export default function App() {
                     : ""}
             </PaneLabel>
             <PaneContent>
-              {activeViz === "wordcloud" && <WordCloud commits={cloudCommits} allCommits={data ?? []} />}
+              {activeViz === "wordcloud" && (
+                <WordCloud commits={cloudCommits} allCommits={data ?? []} />
+              )}
               {activeViz === "clustermap" && (
                 <FileClusterMap
                   commits={clusterCommits}
@@ -443,7 +445,9 @@ export default function App() {
                   repoKey={activeRepo}
                 />
               )}
-              {activeViz === "streamgraph" && data && <StreamGraph key={activeRepo} commits={data} />}
+              {activeViz === "streamgraph" && data && (
+                <StreamGraph key={activeRepo} commits={data} />
+              )}
             </PaneContent>
           </Pane>
         </Body>

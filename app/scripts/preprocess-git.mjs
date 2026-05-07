@@ -179,8 +179,7 @@ for (const repoName of repos) {
         let foundBranch = null;
 
         for (const otherCommit of commits) {
-          if (otherCommit.parents.length > 1 &&
-              otherCommit.parents[1] === commit.hash) {
+          if (otherCommit.parents.length > 1 && otherCommit.parents[1] === commit.hash) {
             // This commit is the second parent of a merge
             foundBranch = extractMergeBranch(otherCommit.subject);
             if (foundBranch) {
@@ -194,7 +193,7 @@ for (const repoName of repos) {
         if (!branchOf.has(commit.hash)) {
           const shortSubject = commit.subject
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/[^a-z0-9]+/g, "-")
             .slice(0, 20);
           branchOf.set(commit.hash, shortSubject || `feature-${commit.hash.slice(0, 7)}`);
         }

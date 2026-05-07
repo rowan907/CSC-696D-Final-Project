@@ -138,9 +138,7 @@ function buildGraph(
     }
 
     const paths = [...new Set(validFiles.map((f) => f.path))];
-    const nodeKeys = [
-      ...new Set(paths.map(pathToKey).filter((k): k is string => k !== null)),
-    ];
+    const nodeKeys = [...new Set(paths.map(pathToKey).filter((k): k is string => k !== null))];
 
     for (const key of nodeKeys) {
       nodeCount.set(key, (nodeCount.get(key) ?? 0) + 1);
@@ -206,7 +204,11 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     if (svgRef.current) select(svgRef.current).selectAll("*").remove();
   }, [repoKey]);
 
-  const { nodes: nextNodes, links: nextLinks, maxExpandedDirFiles } = useMemo(
+  const {
+    nodes: nextNodes,
+    links: nextLinks,
+    maxExpandedDirFiles,
+  } = useMemo(
     () => buildGraph(commits, expanded, excludeHidden, maxNodes),
     [commits, expanded, excludeHidden, maxNodes],
   );
@@ -456,7 +458,8 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
     // Overflow indicator
     root.select("g.legend").select("text.legend-overflow").remove();
     if (stableDirs.length > 12) {
-      root.select<SVGGElement>("g.legend")
+      root
+        .select<SVGGElement>("g.legend")
         .append("text")
         .attr("class", "legend-overflow")
         .attr("transform", `translate(0,${12 * 16})`)
@@ -536,7 +539,13 @@ export default function FileClusterMap({ commits, allCommits, repoKey }: Props) 
             style={{ width: 80, accentColor: "#388bfd", opacity: noExpanded ? 0.3 : 1 }}
             disabled={noExpanded}
           />
-          <span style={{ color: noExpanded ? "#3d444d" : "#f0f6fc", minWidth: 36, fontVariantNumeric: "tabular-nums" }}>
+          <span
+            style={{
+              color: noExpanded ? "#3d444d" : "#f0f6fc",
+              minWidth: 36,
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
             {noExpanded ? "—" : `${Math.min(maxNodes, sliderMax)}/${sliderMax}`}
           </span>
         </label>

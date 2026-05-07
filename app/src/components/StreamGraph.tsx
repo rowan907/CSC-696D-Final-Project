@@ -1,13 +1,6 @@
 import { useRef, useMemo, useEffect, useState } from "react";
 import { select, pointer } from "d3-selection";
-import {
-  stack,
-  stackOffsetWiggle,
-  stackOrderInsideOut,
-  area,
-  curveBasis,
-  line,
-} from "d3-shape";
+import { stack, stackOffsetWiggle, stackOrderInsideOut, area, curveBasis, line } from "d3-shape";
 import { scaleTime, scaleLinear } from "d3-scale";
 import { axisBottom } from "d3-axis";
 import "d3-transition";
@@ -78,8 +71,7 @@ function buildEraStreamData(
     { length: numCohorts },
     (_, i) => new Date(minTime + i * cohortMs),
   );
-  const fmt = (dt: Date) =>
-    dt.toLocaleDateString(undefined, { year: "numeric", month: "short" });
+  const fmt = (dt: Date) => dt.toLocaleDateString(undefined, { year: "numeric", month: "short" });
   const labels = cohortDates.map((date, i) => {
     const end = i < numCohorts - 1 ? cohortDates[i + 1] : new Date(maxTime);
     return `${fmt(date)} – ${fmt(end)}`;
@@ -88,10 +80,7 @@ function buildEraStreamData(
   return { snapshots, labels, maxTime, mode: "era" };
 }
 
-function buildAuthorStreamData(
-  commits: Commit[],
-  numSamples: number,
-): StreamData | null {
+function buildAuthorStreamData(commits: Commit[], numSamples: number): StreamData | null {
   const sorted = commits
     .filter((c) => c.files && c.files.length > 0)
     .sort((a, b) => +new Date(a.date) - +new Date(b.date));
@@ -154,10 +143,7 @@ function buildAuthorStreamData(
   return { snapshots, labels: authors, maxTime, mode: "author" };
 }
 
-function buildAuthorCommitStreamData(
-  commits: Commit[],
-  numSamples: number,
-): StreamData | null {
+function buildAuthorCommitStreamData(commits: Commit[], numSamples: number): StreamData | null {
   const sorted = [...commits].sort((a, b) => +new Date(a.date) - +new Date(b.date));
 
   if (sorted.length < 2) return null;
@@ -228,7 +214,8 @@ export default function StreamGraph({ commits }: Props) {
   useEffect(() => {
     setExcludedCohorts(new Set());
     // Clear persistent SVG groups so the next draw starts fresh
-    if (svgRef.current) select(svgRef.current).selectAll("g.sg-paths,g.sg-decor,g.sg-legend,g.sg-linepanel").remove();
+    if (svgRef.current)
+      select(svgRef.current).selectAll("g.sg-paths,g.sg-decor,g.sg-legend,g.sg-linepanel").remove();
   }, [groupBy, commits]);
 
   useEffect(() => {
@@ -251,9 +238,7 @@ export default function StreamGraph({ commits }: Props) {
       const innerW = W - margin.left - margin.right;
 
       const splitY = Math.round(H * STREAM_SPLIT);
-      const streamInnerH = hasLinePanel
-        ? splitY - margin.top - 8
-        : H - margin.top - margin.bottom;
+      const streamInnerH = hasLinePanel ? splitY - margin.top - 8 : H - margin.top - margin.bottom;
       const linePanelY = splitY + 8;
       const lineInnerH = H - linePanelY - margin.bottom;
 
@@ -283,9 +268,7 @@ export default function StreamGraph({ commits }: Props) {
 
       const allY = series.flatMap((s) => s.flatMap((d) => [d[0], d[1]]));
       const absMax =
-        series.length > 0
-          ? Math.max(Math.abs(Math.min(...allY)), Math.abs(Math.max(...allY)))
-          : 1;
+        series.length > 0 ? Math.max(Math.abs(Math.min(...allY)), Math.abs(Math.max(...allY))) : 1;
       const yScale = scaleLinear().domain([-absMax, absMax]).range([streamInnerH, 0]);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -309,7 +292,8 @@ export default function StreamGraph({ commits }: Props) {
         root.append("g").attr("class", "sg-linepanel");
       }
 
-      const g = root.select<SVGGElement>("g.sg-paths")
+      const g = root
+        .select<SVGGElement>("g.sg-paths")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       // Clear non-path decorations; paths are handled by D3 join below
@@ -317,12 +301,14 @@ export default function StreamGraph({ commits }: Props) {
       root.select("g.sg-legend").selectAll("*").remove();
       root.select("g.sg-linepanel").selectAll("*").remove();
 
-      const decorG = root.select<SVGGElement>("g.sg-decor")
+      const decorG = root
+        .select<SVGGElement>("g.sg-decor")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       // ── Stream paths — joined so transitions animate from previous state ─
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const paths: any = g.selectAll<SVGPathElement, any>("path.stream")
+      const paths: any = g
+        .selectAll<SVGPathElement, any>("path.stream")
         .data(series, (d: any) => d.key as number)
         .join(
           (enter) => enter.append("path").attr("class", "stream").attr("fill-opacity", 0),
@@ -389,7 +375,8 @@ export default function StreamGraph({ commits }: Props) {
       paths.interrupt().transition().duration(500).attr("fill-opacity", 0.88);
 
       // ── Decorations (axis, labels) ───────────────────────────────────────
-      decorG.append("line")
+      decorG
+        .append("line")
         .attr("x1", 0)
         .attr("x2", innerW)
         .attr("y1", yScale(0))
@@ -399,7 +386,8 @@ export default function StreamGraph({ commits }: Props) {
         .attr("stroke-dasharray", "4,3");
 
       if (!hasLinePanel) {
-        decorG.append("g")
+        decorG
+          .append("g")
           .attr("transform", `translate(0,${streamInnerH})`)
           .call(axisBottom(xScale).ticks(6).tickSize(-streamInnerH))
           .call((ax) => {
@@ -419,7 +407,10 @@ export default function StreamGraph({ commits }: Props) {
           let maxIdx = 0;
           s.forEach((d, i) => {
             const h = d[1] - d[0];
-            if (h > maxHeight) { maxHeight = h; maxIdx = i; }
+            if (h > maxHeight) {
+              maxHeight = h;
+              maxIdx = i;
+            }
           });
           return { s, groupIdx: s.key as number, maxHeight, maxIdx };
         })
@@ -430,7 +421,8 @@ export default function StreamGraph({ commits }: Props) {
           const d = s[maxIdx];
           const peakLoc = snapshots[maxIdx].values[groupIdx];
           const locLabel = peakLoc >= 1000 ? `${(peakLoc / 1000).toFixed(1)}k` : `${peakLoc}`;
-          decorG.append("text")
+          decorG
+            .append("text")
             .attr("x", xScale(snapshots[maxIdx].date))
             .attr("y", yScale((d[0] + d[1]) / 2))
             .attr("text-anchor", "middle")
@@ -442,7 +434,8 @@ export default function StreamGraph({ commits }: Props) {
         });
 
       // ── Legend ──────────────────────────────────────────────────────────
-      const legendG = root.select<SVGGElement>("g.sg-legend")
+      const legendG = root
+        .select<SVGGElement>("g.sg-legend")
         .attr("transform", `translate(${margin.left + innerW + 16}, ${margin.top})`);
 
       legendG
@@ -469,7 +462,8 @@ export default function StreamGraph({ commits }: Props) {
 
       legendItems.forEach(({ label, i }, li) => {
         const isExtracted = safeExcluded.has(i);
-        const row = legendG.append("g")
+        const row = legendG
+          .append("g")
           .attr("transform", `translate(0, ${li * 18 + 8})`)
           .style("cursor", "pointer")
           .on("click", () => {
@@ -490,8 +484,7 @@ export default function StreamGraph({ commits }: Props) {
           .attr("stroke", isExtracted ? cohortColor(i, numGroups) : "none")
           .attr("stroke-width", 1);
 
-        const displayLabel =
-          mode !== "era" && label.length > 14 ? label.slice(0, 13) + "…" : label;
+        const displayLabel = mode !== "era" && label.length > 14 ? label.slice(0, 13) + "…" : label;
         row
           .append("text")
           .attr("x", 14)
@@ -521,11 +514,14 @@ export default function StreamGraph({ commits }: Props) {
       // ── Line panel ──────────────────────────────────────────────────────
       if (!hasLinePanel) return;
 
-      const lineG = root.select<SVGGElement>("g.sg-linepanel")
+      const lineG = root
+        .select<SVGGElement>("g.sg-linepanel")
         .attr("transform", `translate(${margin.left},${linePanelY})`);
 
       // Divider
-      root.select("g.sg-linepanel").append("line")
+      root
+        .select("g.sg-linepanel")
+        .append("line")
         .attr("x1", -margin.left)
         .attr("x2", W - margin.left)
         .attr("y1", splitY - linePanelY)
@@ -556,7 +552,9 @@ export default function StreamGraph({ commits }: Props) {
         1,
         ...Array.from(safeExcluded).flatMap((ci) => snapshots.map((s) => s.values[ci])),
       );
-      const lineYScale = scaleLinear().domain([0, maxLocValue * 1.05]).range([lineInnerH, 0]);
+      const lineYScale = scaleLinear()
+        .domain([0, maxLocValue * 1.05])
+        .range([lineInnerH, 0]);
 
       lineG
         .append("g")
@@ -691,19 +689,31 @@ export default function StreamGraph({ commits }: Props) {
     >
       <div style={{ position: "absolute", top: 4, left: 16, zIndex: 10, display: "flex", gap: 4 }}>
         <button
-          style={groupBy === "era" ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" } : btnBase}
+          style={
+            groupBy === "era"
+              ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" }
+              : btnBase
+          }
           onClick={() => setGroupBy("era")}
         >
           By Era
         </button>
         <button
-          style={groupBy === "author" ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" } : btnBase}
+          style={
+            groupBy === "author"
+              ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" }
+              : btnBase
+          }
           onClick={() => setGroupBy("author")}
         >
           By Author (LOC)
         </button>
         <button
-          style={groupBy === "author-commits" ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" } : btnBase}
+          style={
+            groupBy === "author-commits"
+              ? { ...btnBase, background: "#21262d", border: "1px solid #30363d", color: "#f0f6fc" }
+              : btnBase
+          }
           onClick={() => setGroupBy("author-commits")}
         >
           By Author (Commits)

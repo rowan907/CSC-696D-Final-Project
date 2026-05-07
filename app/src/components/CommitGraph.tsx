@@ -547,8 +547,8 @@ export default function CommitGraph({
 
                 // Skip if this is just connecting to the next commit in the same lane
                 // (already drawn above)
-                const nextInLane = placed.find((n, idx) =>
-                  idx > c.row && n.lane === c.lane && n.row > c.row
+                const nextInLane = placed.find(
+                  (n, idx) => idx > c.row && n.lane === c.lane && n.row > c.row,
                 );
                 if (nextInLane && parentPlaced.hash === nextInLane.hash) {
                   return null;
@@ -564,8 +564,10 @@ export default function CommitGraph({
                   : c.color;
 
                 // Only highlight lines where BOTH commits belong to the active branch
-                const isActiveBranch = activeBranch &&
-                  c.branch === activeBranch.name && parentPlaced.branch === activeBranch.name;
+                const isActiveBranch =
+                  activeBranch &&
+                  c.branch === activeBranch.name &&
+                  parentPlaced.branch === activeBranch.name;
                 const dimmed = activeBranch && !isActiveBranch;
 
                 return (

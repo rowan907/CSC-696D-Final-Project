@@ -422,6 +422,66 @@ the File Cluster Map addresses the most practically urgent developer
 question (coupling and impact analysis), while the Commit Graph serves as a
 useful structural overview. 
 
+\subsection{Discussion.}
+
+The visualizations found in this project attempt to capture both syntactic and
+semantic meaning from the repositories. The File Cluster Map and Sediment Graph
+both attempt to capture information surrounding the code. They include file
+connections, authorship, lines of code, edit dates, etc. The Word Cloud
+and Commit Graph both provide semantic meaning from commits. These capture
+information on the code.
+
+Capturing semantic meaning is extremely difficult, especially visually.
+Aggregating semantic data and producing a visualization is possible, but it requires
+a representation of meaning that is both compact and comparable across commits.
+Commit messages are a natural source of semantic signal, but their quality varies
+enormously: terse or auto-generated messages (e.g.\ ``fix'' or ``update'') carry
+little information, while detailed messages can surface genuine intent.
+Our tf-idf-weighted Word Cloud partially addresses this by suppressing
+high-frequency filler terms and surfacing distinctive vocabulary, but it cannot
+recover meaning from commit messages that were never written expressively in
+the first place.
+
+Even works that perform deeper per-commit analysis remain grounded in
+syntactic elements.
+\cite{changeprism}, for instance, visualizes code changes through structural
+diffs and code-level comparisons.
+True semantic understanding of \emph{why} a
+change was made or what conceptual role a module plays would require
+language-model embeddings, which are beyond the scope of what git metadata
+alone can provide.
+
+\noindent\textbf{Limitations.}
+Several limitations constrain the current system.
+First, the preprocessing pipeline caps ingestion at 4500 commits for
+performance reasons; very large repositories will be analyzed only partially.
+
+Second, our evaluation sample is small (four participants), so the qualitative
+findings should be treated as exploratory rather than conclusive.
+
+Third, the project is not apt at capturing many syntactic elements that are 
+found in Git-Truck. For example, the nested structure of files and directories
+is not captured sufficiently in the File Cluster Map. 
+
+All visualizations operate exclusively on git metadata; no static
+analysis or code parsing is performed, so structural insights are inferred
+from co-change patterns rather than from the code itself.
+
+\noindent\textbf{Future work.}
+Integrating language-model embeddings of commit messages could replace the
+tf-idf heuristic with a richer semantic clustering that groups commits by
+topic even when individual words differ. One example is Andrej Karpathy's
+LLM Wiki \href{https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f}{link}.
+
+A larger, more systematic user study with participants from diverse
+development backgrounds (embedded systems, data science, large enterprise)
+would strengthen the evaluation conclusions.
+
+Finally, making the preprocessing pipeline incremental (updating JSON files
+as new commits arrive rather than rebuilding from scratch) would enable the
+tool to be used on live repositories without the current one-time processing
+overhead.
+
 \begin{thebibliography}{9}
 
 \bibitem{githru}

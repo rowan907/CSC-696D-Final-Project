@@ -1,6 +1,6 @@
 \documentclass[12 pt]{article} 
 \usepackage{float, amsfonts, amssymb, amsmath, blindtext, multicol, graphicx,
-enumitem, listings, hyperref, listings}
+enumitem, listings, hyperref}
 \usepackage[font=small,labelfont=bf]{caption}
 \graphicspath{ {./images/} }
 \lstdefinelanguage{TypeScript}{
@@ -40,10 +40,10 @@ enumitem, listings, hyperref, listings}
 \bigskip
 
 \subsection{Problem Description}
-In this project we created several novel visual analytic systems for git
-data. The visualizations we propose will help developers quickly gain an understanding of
+In this project, we created several novel visual analytic systems for git
+data. The visualizations we propose help developers quickly gain an understanding of
 git repositories. In particular, we seek to give users an understanding of how a
-repo changes over time. We will focus on a few key questions.
+repository changes over time. We focus on a few key questions.
 \begin{enumerate}
     \item Who are the main contributors to a repository?
     \item What were the development priorities for a repository at any given
@@ -55,62 +55,63 @@ repo changes over time. We will focus on a few key questions.
 \end{enumerate}
 \subsection{Motivation}
 Developers often work with large amounts of code and are forced to quickly learn
-the customs and conventions of many repositories, this process can be very
+the customs and conventions of many repositories; this process can be very
 time-consuming. By giving developers tools for quickly visualizing the history
 of a repository, we can immediately give them an understanding of conventions, key
 contributors, and etiquette. \par
-Many visualizations have been developed over the years to work with git data,
-in this project we developed a handful of new visualizations by first
-studying visualizations that others have developed, then either refining them to 
+Many visualizations have been developed over the years to work with git data;
+in this project, we developed a handful of new visualizations by first
+studying visualizations that others have developed, then either refining them to
 improve their visual clarity or augmenting them with additional data. \par
-We developed 3 visualizations for this project. 
+We developed 3 visualizations for this project.
 \begin{enumerate}
-    \item A commit graph showing branches of the repository. Users may filter through 
-        selecting portions of commits for the graphs below to use. In a workflow, this 
-        focuses on looking at a portion of commits to see differences in lines of code, authorship,
+    \item A commit graph showing branches of the repository. Users may filter by
+        selecting portions of commits for the graphs below to use. In a workflow, this
+        focuses on examining a portion of commits to see differences in lines of code, authorship,
         files, and commit messages. Users may also filter by authors. This project
-        has an emphasis on authorship as described in Git-Truck's user-evaluated metrics.
+        emphasizes authorship as described in Git-Truck's user-evaluated metrics.
     \item A `stabilized' Sediment Graph based on the work of
         Erik Bernhardsson \cite{gitoftheseus}.
         Bernhardsson proposes a unique way to understand the age of the contents of a
-        repo, improved his designs by changing the stacking behavior so as rows
-        are added we allow the graph to grow in the positive and negative $y$
-        directions. This improves the stability of the graph by keeping
+        repository. We improved this design by changing the stacking behavior so that as rows
+        are added, the graph grows in both the positive and negative $y$ directions.
+        This improves the stability of the graph by keeping
         individual lines of sediment more horizontal. Reducing the visual
         interference caused by the sediment layers traveling diagonally up the
-        graph, making there width harder to determine. \par
-        We also (based on feedback we received from our peers), added to new views to this
-        visualization. In addition to dividing the layers of sediment by code
-        age we also provided the option to divide the sediment by author,
+        graph makes their width easier to determine.
+        We also, based on feedback we received from our peers, added two new views to this
+        visualization.
+        In addition to dividing the layers of sediment by code
+        age, we also provided the option to divide the sediment by author,
         supporting both total lines of code by author and number of commits by
-        author. These views may be an even better use case then code age, as
+        author. These views may be an even better use case than code age, as
         authorship is generally a more important metric.
 
         In addition, we added interactions to this graph. First, hovering on each sediment
         gives users information on the time range, authorship, or number of commits. Rather
         than having users estimate the values for each of these, we provide them on hover for
-        visual clarity. We also allow users to extract sediments from the graph, particularly 
+        visual clarity. We also allow users to extract sediments from the graph, particularly to
         remove outliers. For example, if one author has a large number of lines of code written,
-        the author is extracted to normalize the distribution of all other authors. Users may 
-        use this in order to increase the expressivity of visual area and also to find 
-        the top contributors of the repository. 
+        that author can be extracted to normalize the distribution of all other authors. Users may
+        use this to increase the expressivity of visual area and also to find
+        the top contributors of the repository.
 \item Word Cloud-style view that allows users to select
         many commits via a time window selection and see a word cloud of
-        the commit messages. This will allow users to quickly see the
-        development focuses of a repo at a particular time window. This is
+        the commit messages. This allows users to quickly see the
+        development focuses of a repository at a particular time window. This is
         inspired by a view from \cite{githru}. We seek to enhance their view by adding a time
         window selection allowing these clouds to be generated for any section
         of the commit history. We also provide users the ability to click a word
         from the word cloud and highlight the commits that include that
-        word. Allowing users to quickly see what changes dealt with certain
+        word, allowing users to quickly see what changes dealt with certain
         topics.
 
-        We augment the Word Cloud through a simple tf-idf weighting of terms.
-        Rather than having users sift through all terms manually, we attempt to 
-        give users important, unique terms to sift through. At times, authors and 
+        We augment the Word Cloud through simple tf-idf weighting of terms.
+        Rather than having users sift through all terms manually, we attempt to
+        provide important, unique terms to sift through. At times, authors and
         referenced libraries are identified, providing a higher level of understanding
-        than the most frequently used terms.
-    \item File Cluster Map. A grouping-based visualization based on a force directed 
+        than the most frequently used terms alone would provide.
+    \item File Cluster Map. A grouping-based visualization based on a force-directed
         graph that clusters files or directories that
         are often modified together, this helps users understand which parts
         of the codebase are most tightly coupled. We animated this view to show
@@ -119,15 +120,15 @@ We developed 3 visualizations for this project.
 
         Nodes here correspond to both files and directories. Directories are opaque nodes,
         and files are transparent nodes with dotted outlines. Directories can be expanded 
-        into files, and files can be collapsed into files. The directory view gives users
-        the ability focus on higher-level abstract details. For instance, is documentation
-        being created alongside tests? With time animation, this becomes apparent for users. 
+        to reveal their files, and files can be collapsed back into directories. The directory view gives users
+        the ability to focus on higher-level abstract details. For instance, is documentation
+        being created alongside tests? With time animation, this becomes apparent for users.
 
         With all node-link diagrams, the number of links dramatically impacts the visual
-        expressivity of the graph. This project's file cluster map is no different. Therefore,
-        we allow users to change the number of files shown when a folder is expanded. The 
-        files are selected by the number of lines of code they contain so as to select
-        the most important documents. 
+        expressivity of the graph. This project's File Cluster Map is no different. Therefore,
+        we allow users to change the number of files shown when a folder is expanded. The
+        files are selected by the number of lines of code they contain in order to select
+        the most important documents.
 \end{enumerate}
 \subsection{Related Research Papers}
 \begin{itemize}
@@ -142,44 +143,44 @@ We developed 3 visualizations for this project.
     visualization tool that represents git repositories as different treemaps.
     Each treemap has its nodes sized by the number of lines of code in the repository,
     and the color of its nodes can represent a variety of interesting factors
-    such as number of commits, top contributors, or even the last change day.
-    This is showing the current structure of a repository, rather than the temporal
+    such as number of commits, top contributors, or the last change date.
+    This visualization shows the current structure of a repository, rather than the temporal
     focus we have in this project. Mainly, we emphasize the importance of seeing
     the historical development of features in a repository. Git-Truck also provides a
     set of metrics that provide guidance for this paper's implementation: number of commits,
-    single author, and top contributor. Here, this project highlights the importance of authorship for
+    single author, and top contributor. This project highlights the importance of authorship for
     repository exploration.
 \item \cite{changeprism} --- This paper gives another approach to visualizing
         code changes that relies on semantic analysis. Though this paper's focus
         is more on visualizing individual commits and discrete changes rather
         than the type of broad analysis of larger repositories we did,
-        it gives some good background on existing visual analytic techniques.
+        it provides some good background on existing visual analytic techniques.
 \end{itemize}
 \subsection{Technical Approach}
-Our technical approach is at a high level
+Our technical approach is, at a high level:
 \begin{enumerate}
-    \item Collect \texttt{.git} files containing git meta-data from repos we wish to
-        study. 
+    \item Collect \texttt{.git} files containing git metadata from repositories we wish to
+        study.
     \item Use a pre-processing script to execute git commands to query this data
-        and create a \texttt{.json} file for each repo containing all commits we
-        want to analyze and any useful meta-data like branch, parent, files
-        changed etc.
-    \item Load our \texttt{.json} files at run time when the users selects a
-        particular repo they want to analyze.
+        and create a \texttt{.json} file for each repository containing all commits we
+        want to analyze and any useful metadata like branch, parent, files
+        changed, etc.
+    \item Load our \texttt{.json} files at run time when the user selects a
+        particular repository they want to analyze.
     \item Build our visualizations from the processed data.
 \end{enumerate}
 Our pre-processing script lives inside the project
 (\texttt{app/scripts/preprocessgit.mjs}) and can be triggered manually
 with \texttt{npm run preprocess:git}. The script uses JavaScript's \texttt{exec}
-function to run git with the flag \texttt{--git-dir=[.git file]}, this command
+function to run git with the flag \texttt{--git-dir=[.git file]}; this command
 allows git to behave for most commands as if it's inside the project we're
-targeting despite only having access to the metadata. This saves us having to
+targeting despite only having access to the metadata. This saves us from having to
 pull the whole project we wish to study. \par
 We then run a \texttt{git log} to get all commit hashes across all branches (for
 performance reasons we cap this at the 4500 most recent commits when more are
 available). Finally, we run git commands on every individual commit to get
 information like predecessor and branch. The information we pull from each
-commit is bellow and is used to support all three visualizations. \par
+commit is below and is used to support all three visualizations. \par
 
 \noindent\begin{minipage}{\linewidth}
 \begin{multicols}{2}
@@ -209,11 +210,11 @@ type CommitFile {
 \\
 \\
 
-We then include all json files in the \texttt{public} directory of our frontend
-app we configure React to serve all files in this directory, so that at runtime
-we can query them as needed. We do this because these files are fairly large and not
+We include all JSON files in the \texttt{public} directory of our frontend
+app; we configure React to serve all files in this directory, so that at runtime
+we can query them as needed. We do this because these files are fairly large, and not
 bundling all of them with our app directly reduces load time. \footnote{If you're
-curious you can see the raw json files by navigating to
+curious, you can see the raw JSON files by navigating to
 \url{https://rowan907.github.io/CSC-696D-Final-Project/flask_commits.json}} \par
 
 % Need to add more details about how the actual visualizations are implemented.
@@ -250,12 +251,12 @@ graph evolves.
 \subsubsection*{Sediment (Stream) Graph}
 The Sediment Graph is implemented using D3's stack generator with three
 selectable data modes.
-In \textit{era mode} the commit timeline is divided into 32 equal cohorts;
+In \textit{era mode}, the commit timeline is divided into 32 equal cohorts;
 each file is attributed to the cohort in which it was first introduced, and
 deletions erode the surviving line count of that birth cohort.
-In \textit{author lines-of-code mode} each file is owned by the first among
+In \textit{author lines-of-code mode}, each file is owned by the first among
 the top-50 authors (by total additions) to touch it, with deletions eroding
-that author's count; in \textit{author commits mode} cumulative commit
+that author's count; in \textit{author commits mode}, cumulative commit
 counts per author are plotted instead of lines of code.
 All three modes produce a matrix of 200 evenly spaced time samples by
 cohort, which is fed to the D3 stack generator.
@@ -278,30 +279,57 @@ Clicking a band extracts it from the main graph into a separate line panel
 below with its own $y$-axis; this is particularly useful for removing a
 dominant author whose band would otherwise compress all others into an
 unreadable sliver.
-A double-click on the line panel restores all extracted cohorts.
+A double-click on the line panel restores all extracted cohorts. \par
 
-\par To speed up implementation we used a few AI tools, primarily Claude
+\subsection{AI Use}
+To speed up implementation, we used a few AI tools, primarily Claude
 Haiku/Sonnet/Opus 4.x, as well as Qwen 3.6 running locally for smaller changes and
-refactors. \par
+refactors. We validated these results with hands-on testing, in addition to AI-written
+validation scripts. These were mostly used to address persistent regression bugs, e.g.,
+during development of the commit graph we created a few test scripts that would
+allow Claude to verify that commits on different branches were being correctly
+separated after every change, as this would frequently break. \par
+We also read
+the code and manually directed Claude to address generic antipatterns we noticed, like
+redundant styling and duplicated logic, as well as logical mistakes more specific
+to our application, like using the wrong git flags or attempting to infer data when it was
+explicitly available. No AI was used on the report or proposals for this
+project, with the exception of one pass with the prompt `make light copy edits
+to this document'\footnote{The unedited version of this report is included in the project
+files}.
+\par
 \subsection{Technical Challenges}
 We initially tried to get all
-the information we'd need from the git log command however this involved manually parsing
-commit messages to try and infer things like merges which was not completely
-accurate. In the end we settled on the approach of getting the commit hashes
+the information we needed from the git log command; however, this involved manually parsing
+commit messages to try and infer things like merges, which was not completely
+accurate. In the end, we settled on the approach of getting the commit hashes
 from the log and running a git command for every commit to get the additional
 data we needed. This
 approach was much slower but more reliable, and since the processing script only
-needs to run once the slowdown was acceptable.
-
-
+needs to run once, the slowdown was acceptable. \par
+A feature we attempted to implement but ultimately failed at was some kind
+of `condensed commit' view that would allow us to support larger repositories.
+The idea was that large numbers of commits tended to lag the app, so in
+order to support larger repositories, we would want to combine 20 or so individual
+commits into one. This proved to be very tricky, as doing so would cause us to
+lose merges and branches and created weird edge cases in the commit graph. We
+attempted strategies to mitigate this, like only combining commits on the
+same branch or `smartly' combining the parents and children of the
+commits we merged, but were ultimately unable to make this work. \par
 
 \subsection{Selected Dataset(s)}
-We selected 4 medium size repos to examine in this project.
+We selected 4 medium-size repositories to examine in this project. As addressed above,
+we were unable to support very large repositories, but the four we selected gave us a
+diverse sampling of git practices.
 \begin{itemize}
-    \item Flask
-    \item Click
-    \item HTTPX
-    \item Requests
+    \item Flask (Python web server library) - A repository with one primary
+    contributor with both long-running and short-lived feature branches.
+    \item Click (Python CLI library) - A companion library to Flask with similar
+    development patterns and a concentrated contributor base.
+    \item HTTPX (Python HTTP client) - A modern async-capable HTTP library showing
+    more distributed authorship and frequent dependency updates.
+    \item Requests (Python HTTP library) - A mature, widely-adopted library with
+    a long history and diverse contributor patterns over multiple maintenance phases.
 \end{itemize}
 \subsection{Expected results and evaluation methodology}
 
@@ -329,6 +357,13 @@ Section 1; we state our concrete expectations below.
         repository, consistent with the power-law distributions reported in the
         Git-Truck literature.
 
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\textwidth]{sediment-main-contributor.png}
+            \caption{Implementation of the Stabilized Sediment Graph showing the outlier David Lord. Using this information, users can recognize that David Lord is the main contributor of the Flask repository.}
+            \label{fig:sediment-main-contributor}
+        \end{figure}
+
     \item \textit{Stabilized Sediment Graph — age-of-code mode (RQ3).}
         The age-of-code view should show that most surviving lines in mature
         repositories were written in early cohorts, with recent cohorts
@@ -338,6 +373,13 @@ Section 1; we state our concrete expectations below.
         surface a visible inflection point—an era in which commit subjects begin
         containing AI-assistance markers such as ``co-authored-by'' or tool
         names—providing evidence for or against RQ3.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\textwidth]{sediment-ai-usage.png}
+            \caption{Implementation of the Stabilized Sediment Graph showing outlier lines of code additions in certain time frames. Users can recognize that there is likely AI usage beginning in 2024.}
+            \label{fig:sediment-ai-usage}
+        \end{figure}
 
     \item \textit{Word Cloud with tf-idf weighting (RQ2).}
         Restricting the time window to a known development phase (e.g.\ a major
@@ -354,6 +396,13 @@ Section 1; we state our concrete expectations below.
         Animating the graph over time should show the emergence of new modules
         and the decoupling or deprecation of old ones, giving developers an
         intuitive picture of architectural evolution.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\textwidth]{file-cluster-structure-change.png}
+            \caption{Implementation of the File Cluster Map showing tightly coupled files and directories as well as its evolution over time. Here, the left image shows the directories in 2012-2018, and the right image shows the directories from 2018-2026.}
+            \label{fig:file-cluster-structure-change}
+        \end{figure}
 \end{itemize}
 
 \noindent\textbf{Evaluation methodology.}
@@ -385,29 +434,33 @@ needs surfaced in question 2.
 % evaluation examples include: case studies, user studies, quantitative evaluation
 
 \subsection{Evaluation results.}
-We collected responses from two professional software engineers.
+We collected responses from four professional software engineers.
 Participant A primarily uses Azure DevOps / TFS rather than raw git tooling,
 and their most-used feature is a file-history view showing the change history
 of individual files.
 Participant B is a command-line-oriented git user whose go-to command is
-\texttt{git log -{}-oneline -{}-graph -{}-all -{}-decorate}, and does not use
-IDE integrations or other visual tools.
+\texttt{git log -{}-oneline -{}-graph -{}-all -{}-decorate} and does not use
+IDE integrations or other visual tools. Participant C said they exclusively
+used git tools from the IntelliJ IDE. Participant D did this as well as used more basic git
+logging.
 
-On question 2, both participants converged on the same underlying concern
+On question 2, the first three participants converged on the same underlying concern
 despite different framings: they want to understand \emph{what code is
-coupled} and \emph{how it has changed}, before touching any of it.
+coupled} and \emph{how it has changed} before touching any of it.
 Participant A asked specifically when and how the area they would be working
 on changed, and which other areas might be affected by their changes.
 Participant B framed this in terms of inferring functional and non-functional
 requirements, including thinking through the implications for future
-developers and maintainers.
+developers and maintainers. Participant D focused more on understanding the
+culture of the repository, saying they prefer to contact key maintainers before
+working on anything other than very small changes.
 
-Both participants were receptive to visual analytics (question 3).
+All four participants were receptive to visual analytics (question 3).
 Participant A noted that it provides a quick understanding of what is
 happening in a repo rather than ``staring at a wall of text.''
 Participant B said it would be ``amazing.''
 
-On question 4, the \textit{File Cluster Map} was cited by both participants
+On question 4, the \textit{File Cluster Map} was cited by the first two participants
 as the most directly useful visualization relative to their stated needs.
 Participant A called it the closest to answering question 2 and said it
 ``would give a visual understanding of what areas of the code to pay
@@ -416,11 +469,23 @@ Participant B highlighted the \textit{Commit Graph} as feeling like the
 most important visualization overall, while also noting that the File Cluster
 Map was valuable; they observed that the commit graph does not directly answer
 question 2 but is nonetheless highly useful in practice.
+However, participants C and D favored the \textit{Sediment Graph} as
+the most useful overall visualization. They said that the authorship
+filters would be most helpful for identifying key contributors.
+Participant C liked how the sediment graph could be used to identify the current
+active contributors as opposed to historical contributors who may have
+contributed heavily early in the project's life cycle but were no longer active.
+Participant D recommended that it would be helpful to see the sediment graph of a particular
+set of files to help identify key contributors within certain modules.
 
-The two responses are consistent with each other and with our expectations:
-the File Cluster Map addresses the most practically urgent developer
-question (coupling and impact analysis), while the Commit Graph serves as a
-useful structural overview. 
+
+The four responses are consistent with each other and with our expectations:
+the File Cluster Map and Sediment Graph address the most practically urgent developer
+questions: coupling and impact analysis for the File Cluster Map and
+identifying key contributors for the Sediment Graph. Which of the two graphs
+they favored broke down along the lines of which of the two question areas they
+were most concerned about. In addition, multiple respondents mentioned the Commit
+Graph as a useful structural overview.
 
 \subsection{Discussion.}
 
@@ -429,7 +494,7 @@ semantic meaning from the repositories. The File Cluster Map and Sediment Graph
 both attempt to capture information surrounding the code. They include file
 connections, authorship, lines of code, edit dates, etc. The Word Cloud
 and Commit Graph both provide semantic meaning from commits. These capture
-information on the code.
+information about the code.
 
 Capturing semantic meaning is extremely difficult, especially visually.
 Aggregating semantic data and producing a visualization is possible, but it requires
@@ -461,7 +526,7 @@ findings should be treated as exploratory rather than conclusive.
 
 Third, the project is not apt at capturing many syntactic elements that are 
 found in Git-Truck. For example, the nested structure of files and directories
-is not captured sufficiently in the File Cluster Map. 
+is not sufficiently captured in the File Cluster Map.
 
 All visualizations operate exclusively on git metadata; no static
 analysis or code parsing is performed, so structural insights are inferred
